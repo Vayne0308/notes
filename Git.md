@@ -1,3 +1,7 @@
+---
+typora-root-url: img-git
+---
+
 ## Git
 
 ### 1.Git的起源
