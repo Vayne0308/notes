@@ -569,7 +569,13 @@ cat index.js 查看文件内容
 
 ![01初始化git](/21克隆dev分支2.png)
 
+#### 合并分支
 
+当在本地分支提交至远程仓库时，找到的compare & pull request(比较并提交请求)，点击进去open a pull request，点击create pull request，下拉点击Merge pull request合并分支
+
+#### github服务器搭建
+
+打开仓库，选择setting=>GitHub Pages==>Source中的none改成master branch，在GitHub Pages中会出现一个地址==>将地址复制并返回仓库，右侧有个Edit(编辑)，将复制的地址粘贴到Website下方，去掉 ./ ==>save
 
 
 
