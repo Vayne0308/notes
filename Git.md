@@ -1,9 +1,3 @@
----
-typora-root-url: img-git
----
-
-## ![01初始化git](C:\Users\ljl\Desktop\笔记\git图片\版本控制
-
 ## Git
 
 ### 1.Git的起源
@@ -501,7 +495,7 @@ vi index.js 编辑index.js文件并保存退出
 git add . 提交到暂存区
 git commit -m "新建index.js文件" 提交到版本区
 git remote add origin 地址 关联远程仓库
-git remote remove origin 删除远程仓库的关联
+  git remote remove origin 删除远程仓库的关联--此步骤可不写
 git push -u origin master 将本地仓库推送到远程仓库  (-u 第一次需要,下一次不用)
 vi index.js 再次修改本地文件
 git add . 提交到暂存区
