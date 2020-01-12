@@ -1,4 +1,4 @@
-CSS介绍
+## CSS介绍
 
 #### 层叠样式表 Cascading Style Sheets
 * 是一种用来表现HTML（标准通用标记语言的一个应用）或XML（标准通用标记语言的一个子集）等文件样式的计算机语言
@@ -1448,19 +1448,149 @@ CSS介绍
 ## BFC：（Block Formatting Content）
 
 * 块级格式化上下文
-              是页面可视化css渲染的一部分，是块盒子布局的一块区域
-              这个区域是相对外界独立的
+         是页面可视化css渲染的一部分，是块盒子布局的一块区域
+         这个区域是相对外界独立的
 * 构成BFC的条件：
-          1、根元素（html）
-          2、浮动元素（float属性不是none的）
-          3、绝对定位和固定定位元素（position属性s是fixed 和 absolute的时候）
-          4、行内块标签（display属性是inline-block）
-          5、overflow属性不是visible的时候
-          6、display其他属性（flex、gird、flow-root、table-cell、table-caption、table、table-row、table-row-group、table-header-group、table-footer-group）
+     * 根元素（html）
+     * 浮动元素（float属性不是none的）
+     * 绝对定位和固定定位元素（position属性s是fixed 和 absolute的时候）
+     * 行内块标签（display属性是inline-block）
+     * overflow属性不是visible的时候
+     * display其他属性（flex、gird、flow-root、table-cell、table-caption、table、table-row、table-row-group、table-header-group、table-footer-group）
 * BFC主要解决的问题：
-      1、清除浮动：BFC区域的高度计算会把浮动元素计算在内
-      2、解决父级塌陷：BFC构成独立的区域，里外的元素应该互补影响
-      3、识别浮动的兄弟元素
+  * 清除浮动：BFC区域的高度计算会把浮动元素计算在内
+  * 解决父级塌陷：BFC构成独立的区域，里外的元素应该互补影响
+  * 识别浮动的兄弟元素
 
+## 浏览器滚动条
 
+* 当html和body都没有overflow属性的时候，滚动条是系统的
+
+* 当html或body 只有一个拥有overflow属性的时候，滚动条也是系统的
+
+* 当body超出html的时候，html滚动条也是给到了系统上
+
+* 当html和body都拥有overflow属性的时候，超出body的元素在body上生成了滚动条
+
+* 在书写移动端的时候，或者pc端某些特殊效果的时候，是不需要系统滚动条的，首先我们要禁止系统滚动条
+
+  * 设置html和body的overflow属性是hidden（系统滚动条是由这两个元素的滚动条传递过来的）
+
+  * 设置html和body的高度为100%，和浏览器屏幕一样高，内部元素超出，我们就可以书写自定义滚动条
+
+    ```
+    <style>
+        html,body{
+            height: 100%;
+            overflow: hidden;
+        }
+        .box{
+        	height: 10000px;
+        }
+    </style>
+    ```
+
+## 三列布局
+
+* 三列布局要求：两边固定，中间自适应
+
+#### 方法1：calc算法
+
+* 思路
+  * 通过calc方法来计算出中间区域的宽度
+  * 三个元素都浮动	
+
+* 特点：
+
+  * center只能放在中间   center无法进行优先加载
+  * 兼容性不好  ie678不支持
+
+  ```js
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>三列布局方法一 calc</title>
+      <style>
+          .left{
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              float: left;
+          }
+          .center{
+              width: calc(100% - 200px);
+              height: 100px;
+              background-color: pink;
+              float: left;
+          }
+          .right{
+              width: 100px;
+              height: 100px;
+              background-color: #ffa000;
+              float: right;
+          }
+      </style>
+  </head>
+  <body>
+      <div>
+          <div class="left"></div>
+          <div class="center"></div>
+          <div class="right"></div>
+      </div>
+  </body>
+  </html>
+  ```
+
+#### 方法2：浮动
+
+* 思路：
+
+  * 左右都浮动
+  * 中间区域不设置宽度，width：auto
+  * 给中间区域设置两边的margin  值为两边的宽度
+
+* 特点：
+
+  * center放在 left 和 right 后边，否则right不能超过不浮动的元素
+
+  * center无法进行优先加载
+
+  ```js
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>三列布局方法一 calc</title>
+      <style>
+          .left{
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              float: left;
+          }
+          .center{
+              height: 100px;
+              background-color: pink;
+              margin: 0 100px;
+          }
+          .right{
+              width: 100px;
+              height: 100px;
+              background-color: #ffa000;
+              float: right;
+          }
+      </style>
+  </head>
+  <body>
+      <div>
+          <div class="left"></div>
+          <div class="right"></div>
+          <div class="center"></div>
+      </div>
+  </body>
+  </html>
+  ```
+
+  
 

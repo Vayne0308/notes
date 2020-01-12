@@ -1,4 +1,4 @@
-typora-root-url: image
+ typora-root-url: image
 
 ## 什么是Nodejs
 
@@ -4188,32 +4188,67 @@ index.html文件中
 
 ## 构建工具webpack
 
-#### 1.了解Webpack相关
+#### 了解Webpack相关
 
 - 什么是webpack
   - Webpack是一个模块打包器(bundler)。
   - 在Webpack看来, 前端的所有资源文件(js/json/css/img/less/...)都会作为模块处理
   - 它将根据模块的依赖关系进行静态分析，生成对应的静态资源
+
 - 五个核心概念
-  - Entry：入口起点(entry point)指示 webpack 应该使用哪个模块，来作为构建其内部依赖图的开始。
-  - Output：output 属性告诉 webpack 在哪里输出它所创建的 bundles，以及如何命名这些文件，默认值为 ./dist。
-  - Loader：loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只能解析 JavaScript）。
+  - Entry：入口起点(entry point)指示 webpack 应该使用哪个模块，来作为构建其内部依赖图的开始(指示webpack以哪个文件为入口开始打包)。
+  - Output：output 属性告诉 webpack 在哪里输出它所创建的 bundles，以及如何命名这些文件，默认值为 ./dist(打包后的bundle输出到哪里)。
+  - Loader：加载器，loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只能解析 JavaScript），loader能帮webpack加载它识别不了的模块。
   - Plugins：插件则可以用于执行范围更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量等。
   - Mode：模式，有生产模式production和开发模式development
+
 - 理解Loader
   - Webpack 本身只能加载JS/JSON模块，如果要加载其他类型的文件(模块)，就需要使用对应的loader 进行转换/加载
+
   - Loader 本身也是运行在 node.js 环境中的 JavaScript 模块
+
   - 它本身是一个函数，接受源文件作为参数，返回转换的结果
+
   - loader 一般以 xxx-loader 的方式命名，xxx 代表了这个 loader 要做的转换功能，比如 json-loader。
+
+  - 配置 loader
+
+    * 去官网找 loader https://webpack.docschina.org/loaders
+
+    * 下载 loader
+
+    * 不需要引入，直接写配置
+
 - 理解Plugins
   - 插件可以完成一些loader不能完成的功能。
+
   - 插件的使用一般是在 webpack 的配置信息 plugins 选项中指定。
+
+  - 配置 plugin
+
+    * 去官网找 plugin https://webpack.docschina.org/plugins
+
+    * 下载 plugins
+
+    * 引入 plugins
+
+    * 写配置
+
 - 配置文件(默认)
+
   - webpack.config.js : 是一个node模块，返回一个 json 格式的配置信息对象
 
-#### 2.开启项目
+- 指令
 
-- 初始化项目：
+  * webpack 启动普通配置指令（会有输出文件 build）
+
+  * webpack-dev-server 启动 devServer 配置指令（不会输出，在内存中编译打包）
+
+#### 开发环境准备
+
+##### 1.开启项目
+
+- 初始化项目：npm init -y
 
   - 生成package.json文件
 
@@ -4229,7 +4264,7 @@ index.html文件中
   - npm install webpack webpack-cli -g  //全局安装
   - npm install webpack webpack-cli -D //本地安装
 
-#### 3.编译打包应用
+##### 2.编译打包应用
 
 - 创建js文件
   - src/js/app.js
@@ -4240,7 +4275,7 @@ index.html文件中
   - src/json/data.json  
 - 创建主页面: 
   - src/index.html
-- 运行指令
+- 运行指令打包资源
   - 开发配置指令：webpack src/js/app.js -o dist/js/app.js --mode=development
     - 功能: webpack能够编译打包js和json文件，并且能将es6的模块化语法转换成浏览器能识别的语法
   - 生产配置指令：webpack src/js/app.js -o dist/js/app.js --mode=production
@@ -4248,13 +4283,13 @@ index.html文件中
 - 结论：
   - webpack能够编译打包js和json文件
   - 能将es6的模块化语法转换成浏览器能识别的语法
-  - 能压缩代码
+  - 生产环境中能压缩代码
 - 缺点：
   - 不能编译打包css、img等文件
   - 不能将js的es6基本语法转化为es5以下语法
 - 改善：使用webpack配置文件解决，自定义功能
 
-#### 4.使用webpack配置文件
+##### 3.使用webpack配置文件
 
 - 目的：在项目根目录定义配置文件，通过自定义配置文件，还原以上功能
 
@@ -4268,8 +4303,15 @@ index.html文件中
     entry: './src/js/app.js',   // 入口文件
     output: {                     // 输出配置
       filename: './js/bundle.js',      // 输出文件名
-      path: resolve(__dirname, 'dist')   //输出文件路径配置
+      path: resolve(__dirname, 'build')   //输出文件路径配置
     },
+    module:{
+        rules:[
+            //配置loader 
+            
+        ]    
+    },
+    plugins:[],       //配置插件
     mode: 'development'   //开发环境(二选一)
     mode: 'production'   //生产环境(二选一)
   };
@@ -4277,291 +4319,253 @@ index.html文件中
 
 - 运行指令： webpack
 
-#### 5.js语法检查
+##### 4.处理css和less文件
 
-- 安装loader
+* 处理css   css-loader
 
-  - npm install eslint-loader eslint --save-dev
+  * 在主模块app.js中引入css文件
+
+    ```
+    import '../css/test1.css';
+    ```
+
+  * 下载 css-loader 和style-loader：npm install --save-dev css-loader style-loader
+
+  * 配置loader
+
+    ```js
+    module: {
+        rules: [        // loader的配置
+        	{
+         		test: /\.css$/,         // 检测 .css 结尾的文件
+           		use: [      // 当这种文件类型需要多个loader处理，用use,执行顺序：从下往上，从右							往左，从后往前 依次执行
+              		'style-loader',	 // 将js文件中css字符串模块，添加到style标签中生效
+              		'css-loader'	 // 将css文件里面内容以字符串形式作为一个模块，插入js文件中
+                ]
+            }
+       	]
+    }
+    ```
+
+* 处理less   less-loader
+
+  * 在主模块app.js中引入less文件
+
+    ```
+    import '../less/test1.less';
+    ```
+
+  * 下载 less-loader less：npm install --save-dev less-loader less
+
+  * 配置loader
+
+    ```js
+     module: {
+        rules: [        // loader的配置
+            {   //处理less文件
+                test: /\.less$/,
+                // 当这种文件类型需要一个loader处理，用loader
+                // loader: 'less-loader' // 将 Less 编译为 CSS
+                use: ['style-loader', 'css-loader', 'less-loader']
+            }
+       	]
+    }
+    ```
+
+##### 5.处理样式中的图片
+
+* 在css样式中引入image图片
+
+* 下载url-loader和file-loader： npm install --save-dev url-loader file-loader
+
+* 配置loader
+
+  ```js
+   module: {
+      rules: [        // loader的配置
+          {
+          	test: /\.(png|jpg|gif)$/,
+          	loader: 'url-loader',
+          	options: {
+            		limit: 8192, // 8 * 1024 = 8 kb 小于8kb以下的图片，会被转化成base64
+                    // [hash:10]取hash值前10位
+                    // [ext]后缀名。之前文件是什么后缀名，之后就是什么
+                	name: '[hash:10].[ext]',
+                	outputPath: 'imgs', // path + outputPath --> build/imgs
+                	esModule: false // 关闭ES6模块化，使用commonjs，解决html img图片出现 [Object Module] 问题
+          	}
+        	}
+     	]
+  }
+  ```
+
+##### 6.处理HTML文件
+
+* 下载html-webpack-plugin插件：npm install --save-dev html-webpack-plugin
+
+* 引入插件
+
+* 配置plugin
+
+  ```js
+  const HtmlWebpackPlugin = require('html-webpack-plugin');  //引入html-webpack-plugin
+  // plugins
+  plugins: [
+      new HtmlWebpackPlugin({
+          // 以 ./src/index.html 为模板创建新的html文件
+          // 新文件结构和源文件一样，会自动引入打包生成的资源（js）
+          template: './src/index.html'
+      })
+  ],
+  ```
+
+##### 7.处理HTML中图片文件
+
+* html中用img标签引入的图片
+
+* 下载html-loader：npm i -D html-loader
+
+* 配置loader
+
+  ```
+   module: {
+      rules: [        // loader的配置
+      	{
+         		 test: /\.(html)$/,
+               loader: 'html-loader'
+        	}
+     	]
+   }	
+  问题：html img图片出现 [Object Module] 问题
+  解决：需在url-loader中书写 esModule: false 让其关闭ES6模块化，使用commonjs，解决html img图片出现 [Object Module] 问题
+  ```
+
+##### 8.处理字体图标资源文件
+
+* 阿里矢量图标库下载字体图标
+
+* 将下载的css文件复制到css文件夹中，新建文件夹media存放字体文件
+
+* 在主模块app.js中引入iconfont.css文件
+
+  ```
+  import '../css/iconfont.css';
+  ```
+
+* 在html文件中引入字体图标文件
+
+  ```
+  <span class="iconfont icon-icon-test"></span>
+  <span class="iconfont icon-icon-test1"></span>
+  <span class="iconfont icon-icon-test2"></span>
+  <span class="iconfont icon-icon-test3"></span>
+  <span class="iconfont icon-icon-test4"></span>
+  ```
+
+* 配置loader ：file-loader
+
+  ```
+  module: {
+      rules: [        // loader的配置
+  		{
+              test: /\.(eot|svg|ttf|woff|mp3)$/,
+              loader: 'file-loader',
+              options: {
+                outputPath: 'media',
+                name: '[hash:10].[ext]'
+              }
+        	}
+     	]
+   }	
+  ```
+
+##### 9.js语法检查
+
+- 下载eslint-loader：npm install eslint-loader eslint --save-dev
 
 - 配置loader
 
-  ```
+  ```js
   module: {
     rules: [
       {
         test: /\.js$/,  //只检测js文件
         exclude: /node_modules/,  //排除node_modules文件夹
         enforce: "pre",  //提前加载使用
-        use: { //使用eslint-loader解析
-          loader: "eslint-loader" 
+        loader: "eslint-loader",    //使用eslint-loader解析
+        options: {
+        	fix: true       // 自动修复部分 eslint 报的错
         }
       }        
     ]
   }
   ```
 
-- 修改package.json（需要删除注释才能生效）
+
+- 使用推荐规则：airbnb --> eslint-config-airbnb-base，进行检查项	
 
   ```
-  "eslintConfig": {   //eslint配置
-    "parserOptions": {  
-      "ecmaVersion": 8,  // es8
-      "sourceType": "module", //  ECMAScript 模块
-    }
-  }
-  ```
-
-- 运行指令：webpack
-
-#### 6.js语法转换
-
-- 安装loader
-
-  - npm install babel-loader @babel/core @babel/preset-env --save-dev
-
-- 配置loader
-
-  ```
-  module: {
-    rules: [
-      {
-        oneOf: [  //数组中的配置只有一个能够生效, 后面的配置都会放在当前数组中
-          {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: {
-              loader: "babel-loader",
-              options: {
-                presets: ['@babel/preset-env']
-              }
-            }
-          }
-        ]
-      }
-    ]
-  }
-  ```
-
-- 运行指令：webpack
-
-#### 7.打包less资源
-
-- 创建less文件
-
-  - src/less/test1.less
-  - src/less/test2.less
-
-- 入口app.js文件
-
-  - 引入less资源  
-
-- 安装loader
-
-  - npm install css-loader style-loader less-loader less --save-dev 
-
-- 配置loader
-
-  ```
-  oneOf: [
-    {
-      test: /\.less$/,
-      use: [{
-        loader: "style-loader"
-      }, {
-        loader: "css-loader" 
-      }, {
-        loader: "less-loader" 
-      }]
-    }
-  ]
-  ```
-
-- 运行指令：webpack
-
-- 在index.html中引入打包生成的dist/js/bundle.js文件,观察效果
-
-#### 8.打包样式文件中的图片资源
-
-- 添加2张图片:
-
-  - 小图, 小于8kb: src/images/1.png
-  - 大图, 大于8kb: src/images/2.jpg
-
-- 在less文件中通过背景图的方式引入图片
-
-- 安装loader
-
-  - npm install file-loader url-loader --save-dev 
-  - 补充：url-loader是对象file-loader的上层封装，使用时需配合file-loader使用。
-
-- 配置loader
-
-  ```
-  {
-    test: /\.(png|jpg|gif|svg)$/,
-    use: [
-      {
-        loader: 'url-loader',
-        options: {
-          outputPath: 'images/',   //在output基础上，修改输出图片文件的位置
-          publicPath: '../dist/images/',  //修改背景图引入url的路径
-          limit: 8 * 1024,  // 8kb大小以下的图片文件都用base64处理
-          name: '[hash:8].[ext]'  // hash值为7位，ext自动补全文件扩展名
+  1.在npm中查找 eslint-config-airbnb-base，进入github地址查看文档
+  2.下载:npx install-peerdeps --dev eslint-config-airbnb-base
+  	npm install --save-dev eslint-config-airbnb eslint eslint-plugin-import
+  3.配置eslint的检查项：
+     /*创建 .eslintrc文件*/
+     {
+        "extends": "airbnb-base",  //使用推荐规则
+        "rules": {				//对推荐规则中不适用的进行修改
+          "linebreak-style": 0,
+          "no-console": 0,
+          "eol-last": 0
         }
       }
-    ]
-  }
   ```
 
 - 运行指令：webpack
 
-- 在index.html中引入打包生成的dist/js/bundle.js文件,观察效果
+##### 10.自动编译打包运行
 
-#### 9.打包html文件
+- 下载Devserver loader：npm install webpack-dev-server --save-dev 
 
-- 添加html文件
-
-  - src/index.html
-  - 注意不要在html中引入任何css和js文件
-
-- 安装插件Plugins
-
-  - npm install clean-webpack-plugin --save-dev 
-
-- 在webpack.config.js中引入插件（插件都需要手动引入，而loader会自动加载）
-
-  - const CleanWebpackPlugin = require('clean-webpack-plugin')
-
-- 配置插件Plugins
-
-  ```
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html'
-    }),
-  ]
-  ```
-
-- 运行指令：webpack
-
-### 10、打包html中图片资源
-
-- 添加图片
-
-  - 在src/index.html添加两个img标签
-
-- 安装loader
-
-  - npm install html-loader --save-dev 
-
-- 修改entry
-
-  - entry: ['./src/js/app.js', './src/index.html']
-
-- 配置loader
-
-  ```
-  {
-    test: /\.(html)$/,
-    use: {
-      loader: 'html-loader'
-    }
-  }
-  ```
-
-- 运行指令：webpack
-
-### 11、打包其他资源
-
-- 添加字体文件
-
-  - src/media/iconfont.eot
-  - src/media/iconfont.svg
-  - src/media/iconfont.ttf
-  - src/media/iconfont.woff
-  - src/media/iconfont.woff2
-
-- 修改样式
-
-  ```
-  @font-face {
-    font-family: 'iconfont';
-    src: url('../media/iconfont.eot');
-    src: url('../media/iconfont.eot?#iefix') format('embedded-opentype'),
-    url('../media/iconfont.woff2') format('woff2'),
-    url('../media/iconfont.woff') format('woff'),
-    url('../media/iconfont.ttf') format('truetype'),
-    url('../media/iconfont.svg#iconfont') format('svg');
-  }
-  
-  .iconfont {
-    font-family: "iconfont" !important;
-    font-size: 16px;
-    font-style: normal;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  ```
-
-- 修改html，添加字体
-
-- 配置loader
-
-  ```
-  {
-    loader: 'file-loader',
-    exclude: [/\.js$/, /\.html$/, /\.json$/],
-    options: {
-      outputPath: 'media/',
-      publicPath: '../dist/media/',
-      name: '[hash:8].[ext]',
-    },
-  }
-  ```
-
-- 运行指令：webpack
-
-### 12、自动编译打包运行
-
-- 安装loader
-
-  - npm install webpack-dev-server --save-dev 
-
-- 引入webpack
-
-  - const webpack = require('webpack');
+- 引入webpack：const webpack = require('webpack');
 
 - 修改webpack配置对象（注意不是loader中）
 
+  ```js
+   	// 开发服务器
+    	// 指令：webpack 只能启动普通的配置。 要想启动devServer，要改指令：npx webpack-dev-server
+    	// npx运行时会将当前目录node_modules/.bin临时添加为环境变量
+   	// npx用来启动本地安装的包
+  	// 启动开发服务器
+    devServer: {
+      contentBase: resolve(__dirname, 'build'), // 项目根目录
+      compress: true, // 启动gzip压缩
+      port: 3000,
+      open: true, // 自动打开浏览器
+      hot: true // 开启HMR功能
+    },
+    devtool: 'inline-source-map',  // 将编译后的代码映射回原始源代码，更容易地追踪错误和警告
+    plugins: [
+        new webpack.NamedModulesPlugin(),
+        new webpack.HotModuleReplacementPlugin()
+    ]
   ```
-  devtool: 'inline-source-map',  // 将编译后的代码映射回原始源代码，更容易地追踪错误和警告
-  devServer: {
-    contentBase: './dist',  //项目根路径
-    hot: true,  //开启热模替换功能
-    open: true  //自动打开浏览器
-  },
-  plugins: [
-    new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin()
-  ]
-  ```
-
-- 修改loader部分配置
-
-  - 因为构建工具以dist为根目录，不用再找dist了
-  - `publicPath: '../dist/images/'` --> `publicPath: 'images/'`
-  - `publicPath: '../dist/media/'` --> `publicPath: 'media/'`
 
 - 修改package.json中scripts指令
 
-  - "start": "webpack-dev-server",
-  - "dev": "webpack-dev-server"
+  - "start": "webpack-dev-server --config ./config/webpack.dev.js",     //开发环境
+  - "build": "webpack  --config ./config/webpack.prod.js""    //生产环境
 
-- 运行指令：npm start / npm run dev
+- 运行指令：npm start / npm run build
 
 > 以上就是webpack开发环境的配置，可以在内存中自动打包所有类型文件并有自动编译运行、热更新等功能。
+>
+> HMR功能：hot module replacement 热模块替换(模块热替换)
+>
+> ​    作用：只更新需要更新的模块，其他不变（不用全部刷新，只更新一部分）
+>
+> ​     样式的HMR需结合style-loader一起使用，
 
-### 13、准备生产环境
+#### 准备生产环境
 
 - 创建文件夹config，将webpack.config.js复制两份
 
@@ -4625,33 +4629,13 @@ index.html文件中
     - npm i serve -g  
     - serve -s dist
 
-### 14、清除打包文件目录
+##### 1.提取css成单独文件
 
-- 安装插件
+* 开发环境中css文件通过style-loader自动引入到HTML中，容易出现闪屏现象，在生产环境中需通过link引入外部css文件的方式解决
 
-  - npm install clean-webpack-plugin --save-dev
+- 下载插件：npm install mini-css-extract-plugin --save-dev 
 
-- 引入插件
-
-  - const CleanWebpackPlugin = require('clean-webpack-plugin');
-
-- 配置插件
-
-  ```
-  new CleanWebpackPlugin()
-  ```
-
-- 运行指令：npm run build
-
-### 15、提取css成单独文件
-
-- 安装插件
-
-  - npm install mini-css-extract-plugin --save-dev 
-
-- 引入插件
-
-  - const MiniCssExtractPlugin = require("mini-css-extract-plugin");	
+- 引入插件：const MiniCssExtractPlugin = require("mini-css-extract-plugin");	
 
 - 配置loader
 
@@ -4680,11 +4664,23 @@ index.html文件中
   - npm run build
   - serve -s dist
 
-### 16、添加css兼容
+##### 2.清除打包文件目录
 
-- 安装loader
+- 安装插件：npm install clean-webpack-plugin --save-dev
 
-  - npm install postcss-loader autoprefixer --save-dev 
+- 引入插件：const CleanWebpackPlugin = require('clean-webpack-plugin');
+
+- 配置插件
+
+  ```
+  new CleanWebpackPlugin()     // 清除output.path中所有文件
+  ```
+
+- 运行指令：npm run build
+
+##### 3.处理css兼容
+
+- 安装loader：npm install postcss-loader  postcss-import  postcss-preset-env  cssnano --save-dev 
 
 - 配置loader
 
@@ -4694,44 +4690,41 @@ index.html文件中
     use: [
       MiniCssExtractPlugin.loader,
       'css-loader',
-      'postcss-loader',
+      {
+          // css的兼容性处理
+          loader: 'postcss-loader',
+          options: {
+              ident: 'postcss',
+              plugins: loader => [
+              require('postcss-import')({ root: loader.resourcePath }),
+              require(' ')(),
+              require('cssnano')()
+          ]
+      }
       'less-loader',
     ]
   }
   ```
 
-- 在项目根目录添加postcss配置文件：postcss.config.js
+- 在项目package.jason配置文件: browserslist，在github中查看browserslist相关配置
 
   ```
-  module.exports = {
-    "plugins": {
-      "autoprefixer": {
-        "browsers": [
-          "ie >= 8",
-          "ff >= 30",
-          "chrome >= 34",
-          "safari >= 8",
-          "opera >= 23"
-        ]
-      }
-    }
-  }
+  "browserslist": [
+      "> 0.5%",
+      "not ie <= 8",
+      "not dead"
+  ]
   ```
 
 - 运行指令：
 
   - npm run build
-  - serve -s dist
 
-### 17、压缩css
+##### 4.压缩css
 
-- 安装插件
+- 安装插件：npm install optimize-css-assets-webpack-plugin --save-dev 
 
-  - npm install optimize-css-assets-webpack-plugin --save-dev 
-
-- 引入插件
-
-  - const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');	
+- 引入插件：const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');	
 
 - 配置插件
 
@@ -4746,78 +4739,113 @@ index.html文件中
 - 运行指令：
 
   - npm run build
-  - serve -s dist
 
-### 18、图片压缩
+##### 5.全局路径
 
-- 安装loader
-
-  - npm install img-loader imagemin-gifsicle imagemin-mozjpeg imagemin-pngquant imagemin-svgo imagemin --save-dev 
-
-- 配置loader
+* 设置所有文件为绝对路径输出：在webpack.prod.js文件配置中配置以下内容
 
   ```
-  {
-    test: /\.(png|jpg|gif|svg)$/,
-    use: [
+  output: {
+      // 所有资源的引入路径 （资源link、url引入的路径）
+      publicPath: '/'
+    }
+  ```
+
+* 下载server包文件：npm i server -g
+
+* 运行指令：serve  build （以build下文件作为根路径进行操作）
+
+* 为了方便运行，在pasckage.json 文件中将serve  build也设置到相应的指令中，只需运行npm run build操作
+
+  ```
+  "scripts": {
+      "build": "webpack --config ./config/webpack.prod.js && serve  build"
+    },
+  ```
+
+##### 6.js兼容性处理
+
+###### babel-loader
+
+* 下载loader：npm install babel-loader babel-core babel-preset-env 
+
+* 配置laoder  使ES6模块形成commonjs（ES6以下版本）可以通过nodejs识别
+
+  ```
+  module: {
+    rules: [
       {
-        loader: 'url-loader',
-        options: {
-          limit: 8 * 1024,  // 8kb大小以下的图片文件都用base64处理
-          name: 'images/[name].[hash:8].[ext]'
-        }
-      },
-      {
-        loader: 'img-loader',
-        options: {
-          plugins: [
-            require('imagemin-gifsicle')({
-              interlaced: false
-            }),
-            require('imagemin-mozjpeg')({
-              progressive: true,
-              arithmetic: false
-            }),
-            require('imagemin-pngquant')({
-              floyd: 0.5,
-              speed: 2
-            }),
-            require('imagemin-svgo')({
-              plugins: [
-                { removeTitle: true },
-                { convertPathData: false }
-              ]
-            })
-          ]
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
         }
       }
     ]
   }
   ```
 
-- 运行指令：
+  > babel-loader和eslint-loader产生冲突，babel-loader将es6版本转为es5版本，是在源文件基础上更改的，因此在eslint-loader检查时会报错，解决方案：在eslint-loader配置一个enforce：pre，让eslint-loader优先执行。
 
-  - npm run build
-  - serve -s dist  
+###### @babel/polyfill（方案1）
 
-### 19、压缩html
+* 较高级的语法babel-loader处理不了，需引入babel中的一个包 @babel/polyfill
+* 下载@babel/polyfill包： npm i  @babel/polyfill
+* 在app.js主模块中引入polyfill：import   ‘@babel/polyfill’
 
-- 修改插件配置
+###### core.js（方案2）
+
+* @babel/polyfill包会将所有兼容性处理的内容全部打包，会造成内容较大，通过按core.js实现按需加载
+
+* 下载：npm i core.js
+
+* 配置package.config.js
+
+  ```js
+  {
+      loader: 'babel-loader',
+      options: {
+          presets: [
+              [
+                  '@babel/preset-env',
+                  {
+                      // polyfill 按需加载
+                      targets: {
+                          edge: '17',
+                          firefox: '60',
+                          chrome: '67',
+                          safari: '11.1',
+                          ie: '9'
+                      },
+                      useBuiltIns: 'usage',
+                      corejs: {
+                      	version: 3
+                      }
+                  }
+              ]
+          ]
+  	}	
+  }
+  ```
+
+##### 7.压缩html
+
+- 修改插件配置，在HtmlWebpackPlugin中查看配置
 
   ```
   new HtmlWebpackPlugin({
     template: './src/index.html',
     minify: {
-      removeComments: true,
-      collapseWhitespace: true,
-      removeRedundantAttributes: true,
-      useShortDoctype: true,
-      removeEmptyAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      keepClosingSlash: true,
-      minifyJS: true,
-      minifyCSS: true,
-      minifyURLs: true,
+      // 压缩html
+          collapseWhitespace: true, // 移除空格
+          removeComments: true, // 移除注释
+          removeRedundantAttributes: true, // 当值匹配默认值时删除属性。
+          removeScriptTypeAttributes: true, // type="text/javascript"从script标签中删除。
+          removeStyleLinkTypeAttributes: true, // type="text/css"从style和link标签中删除。
+          useShortDoctype: true // 使用HTML5 doctype
     }
   })
   ```
@@ -4825,11 +4853,471 @@ index.html文件中
 - 运行指令：
 
   - npm run build
-  - serve -s dist 
+
+##### 8.查看源代码错误(devtool:'source-map')
+
+* 在webpack的配置中查看devtool ,设置devtool，生产源代码映射文件
+
+* 配置package.config.js
+
+  ```
+  devtool:'source-map'
+  ```
+
+* source-map的前缀
+
+  * eval：将source-map文件整合到js中，最快的
+  * inline：将source-map文件整合到js中
+  * cheap：只精确到行
+  * module：能将node_modules中的整合进来
+
+  > 生产环境一般使用默认： devtool:'source-map'
+  >
+  > 开发环也需设置使用：devtool:'cheap-module-evel-source-map'
+
+
 
 > 以上就是webpack生产环境的配置，可以生成打包后的文件。
 
+#### 优化处理（性能和打包速度）
 
+##### 1..其他配置	
+
+```js
+resolve: {
+    // 路径别名： 优点：简化路径写法  缺点：路径没有提示
+    alias: {
+      $css: resolve(__dirname, '../src/css')
+    }
+    // 可省略的文件后缀名
+    extensions: ['.js', '.json', '.jsx']
+  },
+  externals: {
+    // jquery是包名  jQuery全局变量名称
+    // jquery包就不会被webpack打包
+   	jquery: 'jQuery'
+  }
+}
+```
+
+##### 2.oneof   让文件只被一个loader处理 （打包速度）
+
+* 优点：让webpack构建打包速度更快
+
+* 将loader放在oneof中
+
+  ```js
+   module: {
+      rules: [
+        // loader的配置
+        {
+          // 以下loader只会命中一个
+          // webpack构建打包速度更快
+          oneOf: [
+            { laoder1 },
+            { laoder2 }
+          ]
+        },
+        { eslint-loader }  //由于oneOf只能被一个loader处理，因此需将eslint-loader单独拿出来
+      ]
+   }
+  ```
+
+##### 3.js耗时优化-开启babel缓存
+
+* 在babel-loader中的options，配置cacheDirectory: true
+
+  ```js
+  options: {
+      // 开启babel缓存
+      // webpack构建打包速度(第二次)更快
+      cacheDirectory: true
+  }
+  ```
+
+##### 4.tree-shaking  （性能优化）
+
+* 去除无用的js代码
+* 使用
+  * 必须使用ES6模块化
+  * 需要将webpack环境调为生产环境（会压缩js代码）
+* 满足上述使用条件，会自动使用tree-shaking
+* 在package.json中的配置
+  * sideEffects: false 所有资源都没有副作用（所有资源都可以进行tree shaking）
+  * sideEffects: [ ‘'*.css', '*.less'’ ] 样式资源有副作用（不要进行tree shaking）
+
+##### 5.caching 缓存
+
+* hash：每次webpack构建打包都会生成一个唯一的hash
+
+  ​      所有资源共享同一个hash
+
+  ​      问题：只修改js文件，会导致所有文件缓存失效
+
+* chunkhash：每次输出的chunk生成hash  
+
+  ​      问题：如果来源于同一个文件，hash会一样
+
+* contenthash：每个文件会根据文件内容生成hash值（每个文件的hash都不一样） 
+
+* 配置 webpack.config.js  （在命名时检查文件是否变动，设置文件名为contenthash）
+
+  ```js
+  module.exports = {
+    entry: './src/js/app.js',
+    output: {
+      filename: './js/[name].[contenthash:10].js',
+      path: resolve(__dirname, 'build')
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
+        }
+      ]
+    },
+    plugins: [
+      new htmlWebpackPlugin({
+        template: './src/index.html'
+      }),
+      new MiniCssExtractPlugin({
+        // 提取ccs成单独文件
+        filename: 'css/[name].[contenthash:10].css',
+        chunkFilename: 'css/[id].[contenthash:10].css'
+      }),
+      new OptimizeCSSAssetsPlugin()
+    ],
+    mode: 'production'
+  };
+  
+  ```
+
+##### 6.代码分割 code splitting  （性能优化）
+
+* 作用：提取公共代码成单独文件
+
+* 使用：
+
+  * 通过多入口来分割代码（手动）
+
+    ```js
+    //webpack.config.js文件
+    const { resolve } = require('path');
+    const htmlWebpackPlugin = require('html-webpack-plugin');
+    
+    module.exports = {
+      entry: { // 多入口（有多少入口，就有多少输出）
+        main: './src/js/app.js',
+        module2: './src/js/module2.js'    //公共的入口
+      },
+      output: {
+        filename: './js/[name].[contenthash:10].js',
+        path: resolve(__dirname, 'build')
+      },
+      plugins: [
+        new htmlWebpackPlugin({
+          template: './src/index.html'
+        })
+      ],
+      mode: 'production',
+      
+    };
+    
+    /**
+     * 主模块
+     */
+    // 引入其他模块内容
+    import add from './module1';
+    console.log(add(5, 5));
+    
+    /**
+    * module1
+    */
+    const add = (x, y) => x + y;
+    // 默认暴露
+    export default add;
+    
+    /**
+    * module2
+    */
+    // 分别暴露
+    export const name = 'laofu';
+    export const age = 40;
+    ```
+
+  * optimization.splitChunks.chunks = 'all' 能够提取公共代码成单独文件（自动）
+
+    ```js
+    /**
+     * 主模块
+     */
+    // 引入其他模块内容
+    import add from './module1';
+    import $ from 'jquery';
+    console.log($);
+    console.log(add(5, 5));
+    
+    /**
+    * module1
+    */
+    const add = (x, y) => x + y;
+    // 默认暴露
+    export default add;
+    
+    /**
+    * module2
+    */
+    // 分别暴露
+    import $ from 'jquery';
+    console.log($);
+    export const age = 40;
+    export const name = 'laofu';
+    
+    
+    //webpack.config.js配置文件
+    module.exports = {
+      entry: { // 多入口（有多少入口，就有多少输出）
+        main: './src/js/app.js',
+        module2: './src/js/module2.js'
+      },
+      output: {
+        filename: './js/[name].[contenthash:10].js',
+        path: resolve(__dirname, 'build')
+      },
+      plugins: [
+        new htmlWebpackPlugin({
+          template: './src/index.html'
+        })
+      ],
+      mode: 'production',
+        optimization: {
+            // 会使用一个插件 SplitChunksPlugin 去代码分割
+            splitChunks: {
+              chunks: 'all'
+            },
+    
+            /* splitChunks: {
+              chunks: 'all',   //async只对异步代码进行处理，all所有代码进行处理
+              minSize: 30000, 	//最小数量，大小最小为30kb才会考虑抽取公用模块文件
+              minRemainingSize: 0, 
+              maxSize: 0,     
+              minChunks: 1,
+              maxAsyncRequests: 6,
+              maxInitialRequests: 4,
+              automaticNameDelimiter: '~',
+              automaticNameMaxLength: 30,
+              cacheGroups: {
+                vendors: {
+                  test: /[\\/]node_modules[\\/]/,
+                  priority: -10
+                },
+                default: {
+                  minChunks: 2,
+                  priority: -20,
+                  reuseExistingChunk: true
+                }
+              }
+            } */
+          }
+    ```
+
+  *  单入口 + import动态导入 分割代码（手动）
+
+    ```js
+    /**
+     * 主模块
+     */
+    // 引入其他模块内容
+    import add from './module1';
+    import $ from 'jquery';
+    
+    // 动态加载
+    // 一定会分割单独代码
+    // ES10动态导入
+    import(/* webpackChunkName: "module2" */'./module2')
+      .then(({ name, age }) => {
+        console.log(name, age);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    console.log('app');
+    console.log($);
+    console.log(add(5, 5));
+    
+    
+    /**
+    * module1
+    */
+    const add = (x, y) => x + y;
+    // 默认暴露
+    export default add;
+    
+    /**
+    * module2
+    */
+    // 分别暴露
+    export const age = 40;
+    export const name = 'laofu';
+    
+    console.log('module2');
+    
+    
+    //webpack.config.js配置文件
+    module.exports = {
+      // entry: { // 单入口
+      //   main: './src/js/app.js',
+      // },
+      entry: './src/js/app.js',
+      output: {
+        filename: './js/[name].[contenthash:10].js',
+        path: resolve(__dirname, 'build')
+      },
+      plugins: [
+        new htmlWebpackPlugin({
+          template: './src/index.html'
+        })
+      ],
+      mode: 'production',
+      optimization: {
+        // 会使用一个插件 SplitChunksPlugin 去代码分割
+        splitChunks: {
+          chunks: 'all'
+        }
+      }
+    };
+    ```
+
+##### 7.lazy loading 懒加载
+
+* 懒加载js文件
+
+* 使用：import动态导入
+
+  ```js
+  /**
+   * 主模块
+   */
+  // 引入其他模块内容
+  document.getElementById('btn').onclick = function() {
+    /*
+      不加 webpackPrefetch: true ，是懒加载。 点击按钮时，才去发送请求加载js文件
+      加 webpackPrefetch: true， 是预加载。 等待页面其他资源加载完毕，再去偷偷加载js文件。点击按钮时，读取之前偷偷加载的缓存，直接使用
+        兼容性问题比较严重
+    */
+    import(/* webpackChunkName: "module2", webpackPrefetch: true */'./module2')
+      .then(({ name, age }) => {
+        console.log(name, age);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  console.log('app加载了~');
+  
+  /**
+  * module2
+  */
+  // 分别暴露
+  export const age = 40;
+  export const name = 'laofu';
+  console.log('module2加载了~');
+  ```
+
+##### 8.webpack-budle analyzer 性能分析工具 
+
+* 生产环境下使用
+
+* 下载 npm install --save-dev webpack-bundle-analyzer
+
+* 配置package.config.js
+
+  ```
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+   
+  module.exports = {
+    plugins: [
+      new BundleAnalyzerPlugin()
+    ]
+  }
+  ```
+
+##### 9.shimming 垫片
+
+* 用来向外暴露全局变量，（每个模块就不用引入，可以直接使用）
+
+  * 优点：可以让代码更简写
+  * 缺点：增加了额外的全局变量（一般用来使用jquery，Vue，react等库）
+
+* 配置package.config.js文件
+
+  ```
+  plugins: [
+      new webpack.ProvidePlugin({
+        $: 'jquery'
+      })
+    ],
+  ```
+
+##### 10.progress web application 离线可访问技术
+
+* 下载插件：npm i workbox-webpack-plugin  -D
+
+* 引入插件
+
+  ```
+  const WorkboxPlugin = require('workbox-webpack-plugin');
+  ```
+
+* 配置webconfig-prod.js
+
+  ```
+  plugins: [
+      new WorkboxPlugin.GenerateSW({
+            // 这些选项帮助快速启用 ServiceWorkers
+            // 不允许遗留任何“旧的” ServiceWorkers
+            clientsClaim: true,
+            skipWaiting: true
+      })
+   ]
+  ```
+
+* 注册service  worker（在app.js主模块中注册）
+
+  ```
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    });
+  }
+  ```
+
+  > 在此会导致eslint报错，设置不检查浏览器的全局变量，需在.eslintrc文件中配置
+  >
+  > ```
+  > "env": {
+  >     "browser": true
+  > }
+  > ```
+  >
+  > 此技术兼容性较为严重
+
+##### 11.dll  将文件单独打包
+
+* 单独打包jquery，剩下一个配置文件就不用重复打包jquery
+
+* 
 
 
 
