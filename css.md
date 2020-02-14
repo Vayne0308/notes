@@ -1,3 +1,9 @@
+
+
+
+
+
+
 ## CSS介绍
 
 #### 层叠样式表 Cascading Style Sheets
@@ -559,7 +565,13 @@
   * 英文在一行书写的时候，最后位置可能放不下一整个单词，那么整体的单词就会换行
   * 导致每一行文本末尾参差不齐，所以需要两端对齐
 
-###### 字符和词间距：
+##### 单行文本溢出生成省略号
+> 1、不能让它换行         white-space：nowrap
+> 2、超出隐藏 		overflow：hidden
+> 3、如果裁减掉元素，那么在最后添加一个省略号
+> 4、必须是块级属性元素才生效
+
+#####　字符和词间距：
 
 >* 在html中，英文数字的组合,只要没有空格都会被当做是一个单词;
 >
@@ -570,7 +582,7 @@
 >* letter-spacing:控制字符间距
 >* word-spacing:控制词间距
 
-###### 最小宽度/最小高度
+##### 最小宽度/最小高度
 
 > 当浏览器缩小窗口，生成横向滚动条的时候，元素设置width：100%的宽度  是屏幕的宽度，当滑动横向滚动条的时候，这个元素的宽度没有达到主要内容1000px的要求，所以可以给该元素设置最小宽度  min-width：1000px
 
@@ -1592,5 +1604,1067 @@
   </html>
   ```
 
+#### 方法3：定位
+
+* 思路：
+  * left和right 设置宽，并且绝对定位在两侧
+  * center不设置宽，设置两边的margin  值是left和right的宽
+
+* 特点：
+
+  * center无论写在哪一个位置，都能正常的加载
+  * 无法进行等高布局   因为left和right撑不开父级的高度
+  * 等高布局无法书写
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>三列布局方法一 calc</title>
+      <style>
+          .outer{
+              position: relative;
+          }
+          .left{
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              position: absolute;
+              left: 0;
+              top: 0;
+          }
+          .center{
+              height: 100px;
+              background-color: pink;
+              margin: 0 100px;
+          }
+          .right{
+              width: 100px;
+              height: 100px;
+              background-color: #ffa000;
+              position: absolute;
+              right: 0;
+              top: 0;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="outer">
+          <div class="center"></div>
+          <div class="left"></div>
+          <div class="right"></div>
+      </div>
+  </body>
+  </html>
+  ```
+
+#### 等高布局
+
+* 三列布局的元素都等高排列：
+
+  * 给每一个元素很大的padding-bottom  撑开自身的大小
+  * 然后给自己一个很大的 margin-bottom为负   当小到一定程度的时候，父级就由撑开了
+    所以都设置为10000px
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>三列布局方法一 calc</title>
+      <style>
+          .outer{
+              overflow: hidden;
+          }
+          .left{
+              width: 100px;
+              background-color: red;
+              float: left;
+              padding-bottom: 10000px;
+              margin-bottom: -10000px;
+          }
+          .center{
+              background-color: pink;
+              margin: 0 100px;
+              padding-bottom: 10000px;
+              margin-bottom: -10000px;
+          }
+          .right{
+              width: 100px;
+              background-color: #ffa000;
+              float: right;
   
+              padding-bottom: 10000px;
+              margin-bottom: -10000px;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="outer">
+          <div class="left">
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+              left <br>
+          </div>
+          <div class="right">
+              right
+          </div>
+          <div class="center">
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+              center <br>
+          </div>
+      </div>
+  </body>
+  </html>
+  ```
+
+#### 方法4：圣杯
+
+* center放在最前边优先加载
+* center  left  right都需要浮动在一行显示
+
+    1、最外层outer宽度不设置  默认auto 撑满父级
+    2、给outer两边100px的padding  不显示center 用来显示left和right
+    3、给left向左移动  margin-left：-100%。left紧贴着outer内容区域的左边缘，然后使用相对定位把	left继续左移100px
+    4、给right向移动 margin-left：-100px.（right的右边缘jin紧贴outer内容右边缘），使用相对定位	把right向右移动100px
+*  缺点：当内容区域足够小的时候，布局就会换行显示
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>三列布局方法一 calc</title>
+    <style>
+        .outer{
+            position: relative;
+            padding: 0 100px;
+            overflow: hidden;
+        }
+        .center{
+            background-color: pink;
+            float: left;
+            width: 100%;
+
+            padding-bottom: 10000px;
+            margin-bottom: -10000px;
+        }
+        .left{
+            width: 100px;
+            background-color: red;
+            float: left;
+
+            margin-left: -100%;
+            position: relative;
+            left: -100px;
+
+            padding-bottom: 10000px;
+            margin-bottom: -10000px;
+        }
+
+        .right{
+            width: 100px;
+            background-color: #ffa000;
+            float: left;
+
+            margin-left: -100px;
+            position: relative;
+            right: -100px;
+
+
+            padding-bottom: 10000px;
+            margin-bottom: -10000px;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer">
+        <div class="center">
+            center <br>
+            center <br>
+            center <br>
+            center <br>
+            center <br>
+            center <br>
+        </div>
+        <div class="left">
+            left <br>
+            left <br>
+            left <br>
+        </div>
+        <div class="right">
+            right <br>
+            right <br>
+            right <br>
+            right <br>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+#### 方法5：双飞翼
+
+* center放在最前边优先加载 
+* center  left  right都需要浮动在一行显示
+
+    1、给center添加一个父级main  让父级和left right进行同级排列
+    2、main区域浮动，并且和容器outer一样宽
+    3、给left  左移 magrin-left：-100%  直接移动到左边空白
+    4、给right 左移  margin-left ：-100px  直接移动到右边空白
+* 优点：
+  * 中间区域优先加载
+  * 解决圣杯 内容区域过小导致换行
+  * 增加了一层dom结构
+
+## counter-increment：num
+
+    在css中书写自增函数  counter-increment:name
+    name是自增函数的名字
+    每次选择器选择到的元素 每检测一个  后边的name的值就加1   从1开始
+    在每一个元素上使用counter（name）来获取当前自增的值
+## border-radius 圆角边框
+
+* 属性允许设置元素的边框圆角
+  * 当使用一个半径的时候，设置的圆形
+  * 当使用两个半径的时候，设置的是椭圆形
+
+* 值可以是：
+  * 1、单位
+  * 2、百分比：百分比是相对于自身的宽和高  x相对于宽  y相对于高
+
+* x轴左上角依次顺时针 / y轴左上角依次顺时针
+  * border-radius: 10px 20px 30px 40px / 50px 60px 70px 80px ;
+
+* 简写1：从左上角开始，4个角顺势针旋转 设置值  x和y相同
+  * border-radius: 10px 20px 30px 40px;
+* 所有的x都是30px  所有的y都是80px
+  * border-radius: 30px/80px;
+* 左上角的xy 和右下角的xy都是30px   右上角的xy和左下角的xy都是80px
+  * border-radius: 30px 80px;
+* 4个角 8个边全部是30px
+  * border-radius: 30px;
+
+* x有两个值，就是对角的x相等  y一个值，就是所有的y都相等
+  * border-radius: 20px 40px/80px;
+  *  border-radius: 50%;
+
+## text-shadow：文字阴影
+    text-shadow：offset-x  offset-y  blur  color
+        offset-x：阴影水平偏移值  右方向为正
+        offset-y：阴影垂直偏移值  下方向为正
+        blur：阴影模糊值  不能为负  （可选）
+        color：阴影颜色
+    阴影不占用他人空间   不影响别人
+    一个文字可以设置多个阴影，用逗号隔开
+## box-shadow：盒子阴影
+    box-shadow：inset offset-x  offset-y  blur  spread color
+        inset：设置内阴影（如果不设置  默认外阴影）
+        offset-x：阴影水平偏移值  右方向为正
+        offset-y：阴影垂直偏移值  下方向为正
+        blur：阴影模糊值  不能为负  （可选）
+        spread：设置阴影外延值  可以为负值  缩小
+        color：阴影颜色
+    对元素添加阴影
+    阴影不占用他人空间   不影响别人
+```html
+//图片阴影
+<style>
+    img{
+        /*过渡动画*/
+        transition: all .2s linear;
+    }
+    img:hover{
+    	box-shadow: 3px 3px 7px 3px rosybrown;
+    }
+</style>
+```
+
+## 背景图设置
+
+* 默认情况下：
+
+  * 背景颜色在整个border-box区域显示
+  * 背景图也在整个border-box区域显示，但是背景图片的原点在padding-box的左上角
+
+  * 以下背景图要求在下background属性后边 才能生效！！！！
+
+* background-origin:
+
+  * 设置背景图原点位置  border-box padding-box content-box
+  * 原点就是控制 背景图定位时 x和y的0 0的位置
+
+* background-clip:
+
+  * 背景图裁剪  border-box padding-box content-box
+  * 只有在裁剪区域才会显示背景图
+
+*  background-size:
+  * 背景图大小：
+    * 单位
+      x 和 y
+      如果只写一个值，那么代表x  y轴等比缩放
+      如果写两个值  图片比例可能发生变化
+    * 百分比
+      百分比是参照：
+      x是参照内容区域的宽度
+      y是参照内容区域的高度
+    * cover
+      等比缩放图片
+      直到图片填充整个容器位置（x和y都填充,并且有一个边是刚好贴边）
+      图片可能会超出容器
+    * contain
+       等比缩放图片
+      直到图片有一个边充满容器即可
+      图片可能充不满整个容器，但是至少一个边是充满的
+
+* 多重背景：
+
+  * 多个背景图的设置使用逗号间隔开
+  * 先引入的背景图在最上边显示   后边依次排列
+
+  ```
+  <style>
+  .box{
+      width: 200px;
+      height: 200px;
+      background: url("../images/bg.png") center center no-repeat,url("../images/atguigu.png") center center no-repeat;
+      }
+  </style>
+  ```
+
+* background-attachment：
+  * 用来指明背景图的位置是固定在窗口（viewport）的，还是跟着包含块移动的
+  * 简单理解为背景图跟随滚动条的移动方式
+  * 值：
+    * fixed  相对视窗定位，不会随着滚动条滚动
+    * scroll  跟着滚动条滚动
+
+## filter滤镜
+
+* filter是控制模糊或颜色偏移等等属性添加到图像上，还可以调整背景、边框的渲染
+  在css中 已经提供了很多filter的滤镜的方法 供我们直接去调用
+
+* 只要是百分比的值 都可以设置数字比例  比如 150% 可以写为1.5
+
+      blur：这是高斯模糊  值是0 默认值   值可以设置css的长度，用px做单位，不接受百分比的值
+      brightness:控制亮度  值是0%代表黑色  100%正常  没有封顶 可以超出一直设置  但是亮度会一直提升
+      contrast:调整图片的对比度  0%的时候是全黑 100% 图像不变   默认值是1
+      saturate:调整图片饱和度  0%是完全不饱和   100%图像无变化  默认值是1
+      opacity:调整透明度
+      hue-rotate:色相旋转  值是0deg到360deg
+      invert:反转色  百分比单位
+      grayscale：灰色处理  将图片转成灰色图像  值是百分比   
+
+## css columns 多栏布局
+
+* 表现出来内容在列之间怎么流动，以及列与列的间隙及分割线的样式
+* 使用了列高平衡，除了最后一列，其他列高度都相等
+* 控制显示多少列使用：column-count  和 column-width
+  * column-count 控制列数
+  * column-width 控制每一列的最小宽度
+  * column-count  和 column-width冲突的时候  column-width优先
+  * column-count  和 column-width我们几乎不会一起书写，所以这两个属性都可以简写为  columns
+
+* column-gap:控制列与列之间的间隔
+
+* column-span:控制分栏布局的某个元素  跨的列数  只有all值
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>分栏布局</title>
+      <style>
+          div{
+              /*column-count: 8;
+              column-width: 400px;*/
+              columns:400px;
+              columns:6;
+              columns:6 300px;
+  
+              column-gap:50px;
+  
+              column-rule: 1px solid red;
+  
+  
+  
+          }
+          div h2{
+              column-span: all;
+              text-align: center;
+          }
+      </style>
+  </head>
+  <body>
+      <div>
+          <h2>华为Mate 30买哪个版本 这是我给你的由衷建议</h2>
+          <p>
+              2019年9月26日，华为正式在国内发布Mate 30系列旗舰手机。目前国内共有两款型号正在发售，即华为Mate 30和Mate 30 Pro。随着发布会正式公布了其售价，相信很多想要购买的网友会直接面临一个全新的问题，这两款谁更值得买呢？5G版本的入门价格很有吸引力
+  
+              由于京东的预购是需要支付100元定金的，因此这样的一个数据是真金白银投票的结果，所以具有很高的参考价值。作为全新发售的旗舰产品，自然更多的人想要体验“完全版”的性能，华为Mate 30 Pro的预购人数更多也在情理当中。
+  
+              01 屏幕差异
+  
+              但是作为普通的消费者，追求性价比是更多人的诉求，想要决定购买哪个版本，我们还是需要先搞懂两者之间的配置差异。Pro版88°超曲面OLED环幕屏
+  
+              首先是屏幕方面的差异，华为Mate 30 Pro这次采用了被网友们成为“瀑布屏”的6.53英寸88°超曲面OLED环幕屏。
+  
+              通过曲面屏覆盖了传统手机的侧边框，可以提供更多更丰富的操控体验，设计感和前卫感十分出色，配合一体式音量键实在是美不胜收。
+          </p>
+      </div>
+  </body>
+  </html>
+  ```
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>多列瀑布流</title>
+      <style>
+          div{
+              columns:4;
+              columns:200px;
+          }
+          div img{
+              width: 100%;
+          }
+      </style>
+  </head>
+  <body>
+      <div>
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+          <img src="../images/img10.jpg" alt="">
+          <img src="../images/img11.jpg" alt="">
+          <img src="../images/img13.jpg" alt="">
+          <img src="../images/img12.jpg" alt="">
+          <img src="../images/img14.jpg" alt="">
+          <img src="../images/img15.jpg" alt="">
+          <img src="../images/img16.jpg" alt="">
+          <img src="../images/img17.jpg" alt="">
+          <img src="../images/img18.jpg" alt="">
+          <img src="../images/img19.jpg" alt="">
+      </div>
+  </body>
+  </html>
+  ```
+
+##  线性渐变 linear-gradient 
+
+* 他是一个函数  所有使用是 linear-gradient()
+* 第一个参数是角度 deg单位  以垂直方向朝上 为0度  顺时针旋转
+  * left top：左上
+  * left：左
+  * right：右
+  * 等等。。。。
+  * 第一个参数可以省略，默认方向 从上到下
+* 第二个参数是 渐变节点
+  * 渐变颜色改变的位置 及颜色值
+  * 颜色节点没有写位置的时候，浏览器会自动的平分颜色区域
+
+* 渐变线：
+  * 从起始位置 沿着角度画的线
+  * 所有垂直于渐变线的线条上的颜色都是一样的
+  * 渐变线可能会超出容器
+  * 渐变线的长度是：最近的两个角画垂直于渐变线的点  两个点之间就是渐变线的长度
+* 渐变线节点：
+  * 在没有书写渐变线节点的时候，渐变线节点都是按照颜色平分的
+  * 当然也可以书写渐变线节点  可以是百分比,也可是px单位
+
+* 渐变图像没有大小限制，主要依赖元素的大小  和backgroud属性的设置
+
+           ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>线性渐变</title>
+    <style>
+        .con{
+            width: 500px;
+            height: 200px;
+            margin: 100px auto;
+            background: linear-gradient(red,green);
+            background: linear-gradient(red,green,pink);
+            background: linear-gradient(0deg,red,green,pink);
+            background: linear-gradient(90deg,red,green,pink);
+            background: linear-gradient(to left,red,green,pink);
+            background: linear-gradient(to top,red,green,pink);
+            background: linear-gradient(to top right,red,green,pink);
+
+            background: linear-gradient(45deg,red,green,pink);
+            background: linear-gradient(30deg,red,deepskyblue);
+            background: linear-gradient(to right top,red,deepskyblue);
+
+
+            /*background: linear-gradient(to right top,red 30%,deepskyblue 50%,green 70%) 0 0 no-repeat;*/
+    
+            /*background: linear-gradient(to right,red 25%,yellow 25%,yellow 50%,green 50%,green 75%,blue 75%) 0 0 no-repeat;*/
+            /*background: linear-gradient(to right,red 20px,yellow 20px,yellow 100px,green 100px,green 200px,blue 200px) 0 0 no-repeat;*/
+            /*background: -webkit-linear-gradient(right,red 20px,yellow 20px,yellow 100px,green 100px,green 200px,blue 200px) 0 0 no-repeat;*/
+
+
+            background-size: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="con"></div>
+</body>
+</html>
+           ```
+
+##  径向渐变 radial-gradient()
+
+* 第一个参数：确定圆的类型
+  * ellipse:指定椭圆的径向渐变
+  * circle:执行圆形的径向渐变
+
+* 第二个参数：执行径向渐变的大小
+  * farthest-corner:圆心到最远角
+  * closest-side:圆心到最近的边
+  * closest-corner：圆心到最近角
+  * farthest-side:圆心到最远的边
+
+* 第三个参数  圆心位置
+
+* 第四个参数：渐变的颜色点
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>径向渐变</title>
+      <style>
+          .box{
+              width: 400px;
+              height: 300px;
+  
+              /*background: radial-gradient(red,green);*/
+              /*background: radial-gradient(circle,red,green);*/
+              /*background: -webkit-radial-gradient(circle,closest-side,red,green);*/
+              /*background: radial-gradient(circle,at 30px 100px,red,green);*/
+              /*background: -webkit-radial-gradient(30px 100px,farthest-side,red,green);*/
+              /*background: -webkit-radial-gradient(30px 100px,farthest-side,red,green);*/
+  
+              background: radial-gradient(at 30px 100px,red 10%,green 80%);
+              background: repeating-radial-gradient(at 30px 100px,red 10%,green 20%)
+  
+          }
+      </style>
+  </head>
+  <body>
+      <div class="box"></div>
+  </body>
+  </html>
+  ```
+
+##  过渡动画
+* 无论是使用css 还是 js  还是 改变类名
+* 只要一个元素的样式发生了变化，那么就会触发过渡动画
+* transition-property：控制执行动画的属性
+
+  * 多个属性用逗号隔开,如果所有的改变属性都控制，可以使用all
+
+* transition-duration：动画执行的时间
+
+  * 单位是s 或者是ms   1s=1000ms
+
+* transition-timing-function:控制动画类型
+  * linear匀速
+  * 也可以使用贝塞尔曲线工具调整cubic-bezier()
+    * https://cubic-bezier.com/#.17,.67,.83,.67
+
+* transition-delay：动画延迟时间
+
+* 大多数的属性是可以控制的，但是也有少部分没法控制，比如 text-align  display
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>过渡动画</title>
+      <style>
+          .box{
+              width: 100px;
+              height: 100px;
+              background-color: red;
+              border: 1px solid #000;
+              font-size: 12px;
+              line-height: 100px;
+  
+             /* transition-property: all;
+              transition-duration: 2s;
+              transition-timing-function: ease-in-out;
+              transition-delay: 1s;*/
+  
+              /*合写*/
+              transition: all 2s linear 1s;
+              /*opacity: 1;*/
+              /*visibility: visible;*/
+          }
+          .box:hover{
+              width: 500px;
+              height: 400px;
+              background-color: pink;
+              border: 10px solid green;
+              font-size: 100px;
+              line-height: 400px;
+              /*opacity: 0;*/
+              /*visibility: hidden;*/
+  
+          }
+          .yellow{
+              color: yellow;
+          }
+      </style>
+  </head>
+  <body>
+      <button id="btn">点我啊 我是18号</button>
+      <div class="box">
+          box
+      </div>
+      <script>
+          var oBox = document.querySelector(".box");
+          var oBtn = document.querySelector("#btn");
+          oBtn.onclick = function () {
+              // oBox.style.color = "yellow";
+              oBox.classList.add("yellow");
+          }
+      </script>
+  </body>
+  </html>
+  ```
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>幽灵按钮</title>
+      <style>
+          *{
+              margin: 0;
+              padding: 0;
+          }
+          .outer{
+              width: 300px;
+              height: 80px;
+              background-color: #1f7de0;
+              color: #dbceeb;
+              position: relative;
+              text-align: center;
+              line-height: 80px;
+              font-size: 40px;
+              margin: 100px auto;
+              overflow: hidden;
+  
+              transition: all 1s linear;
+          }
+          .outer p{
+              width: 250px;
+              height: 15px;
+              background-color: #dbceeb;
+              position: absolute;
+              transition: all 1s linear;
+          }
+          .outer p:nth-of-type(1){
+              left: -250px;
+              top: 0;
+          }
+          .outer p:nth-of-type(2){
+              right: -250px;
+              bottom: 0;
+          }
+          .outer:hover{
+              background-color: #dbceeb;
+              color: #1f7de0;
+          }
+          .outer:hover p{
+              background-color:  #1f7de0;
+          }
+          .outer:hover p:nth-of-type(1){
+              left: 0;
+          }
+          .outer:hover p:nth-of-type(2){
+              right: 0;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="outer">
+          <p class="above"></p>
+          <p class="bottom"></p>
+          html5
+      </div>
+  </body>
+  </html>
+  ```
+
+##  transform属性
+
+* 控制元素变换形状或者位置，规定用户可以使用2D的或者是3D的进行变换
+* 可以让元素  旋转  扭曲  缩放  移动等变换
+
+* rotate:旋转 单位是deg
+  * rotateX();角度为正的：x轴上边缘超里边旋转
+  * rotateY();角度为正的：y轴左边缘超外边旋转
+  * rotate();角度为正，沿着中心点和平面进行顺时针旋转
+
+* skew:扭曲 单位是deg
+
+  * skewX():元素上边线和下边线会左右拉动进行扭曲，默认正为向左扭
+
+  * skewY():元素左边线向上拉伸，右边线向下拉伸，默认为正的时候，左边线向上扭曲
+
+  * skew():是x和y方向的合写，如果只写一个值，只代表x轴扭曲，如果书写两个值 代表x和y的一起扭曲
+
+    > skew(30deg,40deg)和 skewX(30deg) skewY(40deg)的区别
+    >
+    > * skew(30deg,40deg)：是x和y一起开始扭曲 30deg和40deg
+    > * skewX(30deg) skewY(40deg);是先进行X扭曲计算，然后再进行y的扭曲计算，所以导致结果不同
+
+* scale:缩放  没有单位 是一个倍数  1代表不变
+  * scaleX(): 让元素在x轴缩放
+  * scaleX(): 让元素在y轴缩放
+  * scale():如果一个值，代表x和y都按照这个值缩放，跟两个值 分别代表x和y
+
+* translate:移动  单位是px
+  * translateX:值为正 元素向右走
+  * translateY：值为正  元素向下走
+  * translate:当一个值，只代表x   当两个值代表x和y
+  * 单位是px  还可以是百分比，百分比是参照自身的宽和高
+
+* backface-visibility
+
+  * 控制元素背面是否可见  默认visible（可见）  hidden是不可见
+
+* transform-origin：控制元素的变换基点
+
+  * 在x轴上变换基点可以是是 从左边到右边 0px开始计算，也可以是  left  right  center  或百分比
+
+  * 在y轴上变换基点可以是是 从上班到下边 0px开始计算，也可以是  top bottom  center  或百分比
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>变形原点</title>
+        <style>
+            .box{
+                width: 100px;
+                height: 150px;
+                background-color: red;
+                margin: 20px;
+                float: left;
+                transition: all .5s linear;
+            }
+            .box:nth-child(1){
+                transform-origin: right top;
+            }
+            .box:nth-child(1):hover{
+                transform: rotate(30deg);
+            }
+    
+            .box:nth-child(2){
+                transform-origin: center top;
+                /*transform-origin-y: 0px;*/
+            }
+            .box:nth-child(2):hover{
+                transform: rotateX(30deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box"> </div>
+        <div class="box"> </div>
+    </body>
+    </html>
+    ```
+
+* transform-style
+
+  * preserve-3d: 子元素位于父元素的3d空间中
+    * 设置元素的 子元素是位于3d空间中的 还是平面的,一般设置给父元素
+  * flat：子元素位于该元素的平面中国
+
+* 如果没有开启3d，元素就没有3d的遮挡效果，属性不继承  
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Title</title>
+      <style>
+          .box{
+              transform-style: preserve-3d;
+              width: 300px;
+              height: 300px;
+              background-color: rgba(255,0,0,.4);
+              /*第1 2 3个值分别代表 x y z轴，第四个参数代表旋转角度。
+              如果1 2 3 的值是1  就使用这个旋转角度，为0就不使用*/
+              /*只能统一控制xyz  如果分开设置不一样的值，请分开属性书写*/
+              transform: rotate3d(1,1,1,117deg);
+  
+  
+              /*rotateZ和rotate效果是一样的，只不过一个是3d变换 一个是2d变换*/
+              /*transform: rotateZ(10deg);*/
+  
+          }
+          .con{
+              width: 200px;
+              height: 200px;
+              background-color: #5ab3f4;
+              /*3d变换  z轴*/
+              /*transform: translateZ(10px);*/
+              transform: translate3d(10px,10px,100px);
+              /*translateZ不能设置百分比，因为元素没有厚度，所以厚度是0。只能只用px等值的单位*/
+          }
+      </style>
+  </head>
+  <body>
+      <div class="box">
+          <div class="con"></div>
+      </div>
+  </body>
+  </html>
+  ```
+
+  ```html
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>正方体的拼接</title>
+      <link rel="stylesheet" href="reset.css">
+      <style>
+          .outer{
+              width: 200px;
+              height: 200px;
+              margin: 100px auto 0;
+              position: relative;
+  
+              transform-style: preserve-3d;
+              /*perspective: 300px;*/
+  
+              /*transform: rotateY(0deg) rotateX(30deg);*/
+              animation: rotate 10s linear infinite;
+          }
+          .outer li{
+              width: 200px;
+              height: 200px;
+              position: absolute;
+              left: 0;
+              top: 0;
+              transition: all 1s linear;
+              text-align: center;
+              line-height: 200px;
+              color: #fff;
+              font-size: 40px;
+              font-weight: bold;
+  
+              /*backface-visibility控制元素背面是否可见  默认visible（可见）  hidden是不可见*/
+              /*backface-visibility: hidden;*/
+          }
+          .outer li:nth-child(1){
+              background-color: rgba(23,78,156,.5);
+              transition: all 1s linear 1s;
+          }
+          .outer:hover li:nth-child(1){
+              transform: translateZ(100px);
+  
+          }
+  
+          .outer li:nth-child(2){
+              background-color: rgba(44, 156, 119, 0.5);
+              transition: all 1s linear 2s;
+          }
+          .outer:hover li:nth-child(2){
+              /*1、两个属性值是有顺序要求的*/
+              /*2、元素变形，坐标轴跟着变换*/
+              transform: rotateX(180deg) translateZ(100px);
+          }
+  
+          .outer li:nth-child(3){
+              background-color: rgba(156, 47, 74, 0.5);
+              transition: all 1s linear 3s;
+          }
+          .outer:hover li:nth-child(3){
+              /*1、两个属性值是有顺序要求的*/
+              /*2、元素变形，坐标轴跟着变换*/
+              transform: rotateY(90deg) translateZ(100px);
+          }
+  
+          .outer li:nth-child(4){
+              background-color: rgba(83, 5, 156, 0.5);
+              transition: all 1s linear 4s;
+          }
+          .outer:hover li:nth-child(4){
+              /*1、两个属性值是有顺序要求的*/
+              /*2、元素变形，坐标轴跟着变换*/
+              transform: rotateY(-90deg) translateZ(100px);
+          }
+  
+  
+          .outer li:nth-child(5){
+              background-color: rgba(135, 156, 120, 0.5);
+              transition: all 1s linear 5s;
+          }
+          .outer:hover li:nth-child(5){
+              /*1、两个属性值是有顺序要求的*/
+              /*2、元素变形，坐标轴跟着变换*/
+              transform: rotateX(90deg) translateZ(100px);
+          }
+  
+          .outer li:nth-child(6){
+              background-color: rgba(156, 112, 39, 0.5);
+              transition: all 1s linear 6s;
+          }
+          .outer:hover li:nth-child(6){
+              /*1、两个属性值是有顺序要求的*/
+              /*2、元素变形，坐标轴跟着变换*/
+              transform: rotateX(-90deg) translateZ(100px);
+          }
+  
+          @keyframes rotate {
+              from{
+                  transform: rotate3d(1,1,1,0deg);
+              }
+              to{
+                  transform: rotate3d(1,1,1,360deg);
+              }
+          }
+      </style>
+  </head>
+  <body>
+      <ul class="outer">
+          <li>第一</li>
+          <li>第二</li>
+          <li>第三</li>
+          <li>第四</li>
+          <li>第五</li>
+          <li>第六</li>
+      </ul>
+  </body>
+  </html>
+  ```
+
+##  景深设置：（透视）（视距）
+
+* 开启景深：perspective：100px;
+
+* 景深的原理：进大远小
+
+* 透视：把近大远小的图像  透视在屏幕上
+
+* 景深效果想要实现，必须添加开启3d
+
+* 相同元素前后移动的值相等，景深大的 显示元素越大
+
+  ```
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>景深设置</title>
+      <style>
+          .box{
+              transform-style: preserve-3d;
+              perspective: 300px;
+              width: 300px;
+              height: 300px;
+              background-color: rgba(255,0,0,.4);
+  
+          }
+          .con{
+              width: 200px;
+              height: 200px;
+              background-color: #5ab3f4;
+              transform: rotateX(30deg);
+          }
+      </style>
+  </head>
+  <body>
+      <div class="box">
+          <div class="con"></div>
+      </div>
+  </body>
+  </html>
+  ```
 

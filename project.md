@@ -170,7 +170,7 @@ typora-root-url: image
 
 #### 项目开发
 
-##### 下载需要的技术栈依赖及配置项
+##### 1.下载需要的技术栈依赖及配置项
 
 * 配置antd
 
@@ -351,7 +351,7 @@ typora-root-url: image
     });
     ```
 
-#####　使用antd开发登录页面
+#####　2.使用antd开发登录页面
 
 ```js
 //login组件
@@ -539,5 +539,285 @@ export default Login;
     4.export default Form.create()(Login);
     ```
 
-    
+##### 3.登录页面的功能
 
+```js
+import React, { Component } from 'react';
+import { Form, Input, Button, Icon, message } from 'antd';
+import axios from 'axios';
+// 图片必须引入，才会被webpack打包
+import logo from './logo.png';
+import './index.less';
+
+const { Item } = Form;
+
+@Form.create()
+class Login extends Component {
+  // 自定义表单校验规则
+  validator = (rule, value, callback) => {
+    /*
+      rule.field 获取表单key
+      value 获取表单value
+    */
+    // console.log(rule, value);
+
+    const name = rule.field === 'username' ? '用户名' : '密码';
+
+    const reg = /^\w+$/;
+
+    if (!value) {
+      // 输入值为空
+      callback(`${name}不能为空`);
+    } else if (value.length < 4) {
+      callback(`${name}必须大于4位`);
+    } else if (value.length > 15) {
+      callback(`${name}必须小于15位`);
+    } else if (!reg.test(value)) {
+      callback(`${name}只能包含英文、数字、下划线`);
+    }
+    /*
+      callback() 调用不传参，代表表单校验成功
+      callback(message) 调用传参，代表表单校验失败，会提示message错误
+    */
+    // 必须要调用，否则会出问题
+    callback();
+  };
+
+  login = e => {
+    e.preventDefault();
+
+    // 校验表单
+    // 收集表单数据
+    // 发送请求，请求登录
+
+    // 校验表单并收集表单数据
+    this.props.form.validateFields((err, values) => {
+      /*
+        err 错误对象
+          如果表单校验失败，就有错误，值是对象
+          如果表单校验成功，就没有错误，值是null
+        values
+          收集的表单数据
+      */
+
+      if (!err) {
+        // 表单校验成功
+        const { username, password } = values;
+        // 发送请求，请求登录
+        axios.post('/api/login', { username, password })
+          .then(response => {
+            // 请求成功
+
+            // 判断是否登录成功
+            if (response.data.status === 0) {
+              // 登录成功
+              // 跳转到home页面
+              // 不能跳转（只能用于render方法中） 路由链接跳转
+              // return <Redirect to="/" />
+              // 编程式导航（用于非render方法中）
+              this.props.history.replace('/');
+            } else {
+              // 登录失败
+              // 提示错误
+              message.error(response.data.msg);
+              // 清空密码
+              this.props.form.resetFields(['password']);
+            }
+          })
+          .catch(err => {
+            // 请求失败
+            console.log(err);
+            // 提示错误
+            message.error('网络错误~');
+            // 清空密码
+            this.props.form.resetFields(['password']);
+          });
+      }
+    });
+  };
+
+  render() {
+    // getFieldDecorator 高阶组件：用来表单校验
+    const { getFieldDecorator } = this.props.form;
+
+    return (
+      <div className='login'>
+        <header className='login-header'>
+          <img src={logo} alt='logo' />
+          <h1>React项目: 后台管理系统</h1>
+        </header>
+        <section className='login-section'>
+          <h3>用户登录</h3>
+          <Form className='login-form' onSubmit={this.login}>
+            <Item>
+              {getFieldDecorator('username', {
+                rules: [
+                  /* {
+                    required: true,
+                    message: '用户名不能为空'
+                  },
+                  {
+                    min: 4,
+                    message: '用户名必须大于3位'
+                  },
+                  {
+                    max: 15,
+                    message: '用户名必须小于15位'
+                  },
+                  {
+                    pattern: /^\w+$/,
+                    message: '用户名只能包含英文、数字、下划线'
+                  } */
+
+                  {
+                    validator: this.validator
+                  }
+                ]
+              })(
+                <Input
+                  prefix={
+                    <Icon type='user' style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder='用户名'
+                />
+              )}
+            </Item>
+            <Item>
+              {getFieldDecorator('password', {
+                rules: [
+                  {
+                    validator: this.validator
+                  }
+                ]
+              })(
+                <Input
+                  prefix={
+                    <Icon type='lock' style={{ color: 'rgba(0,0,0,.25)' }} />
+                  }
+                  placeholder='密码'
+                />
+              )}
+            </Item>
+            <Item>
+              <Button
+                className='login-form-btn'
+                type='primary'
+                htmlType='submit'
+              >
+                登录
+              </Button>
+            </Item>
+          </Form>
+        </section>
+      </div>
+    );
+  }
+}
+
+// Form.create()(Login) 高阶组件：给Login传递form属性
+// export default Form.create()(Login);
+export default Login;
+```
+
+* 需注意以下几点
+
+  * form表单登录按钮：需在form表单绑定onSubmit事件，button设置htmlType="submit"
+
+  * 登录时需校验表单数据并收集：
+
+    ```js
+    this.props.form.validateFields((err, values) => {}
+        /*
+            err 错误对象
+              如果表单校验失败，就有错误，值是对象
+              如果表单校验成功，就没有错误，值是null
+            values
+              收集的表单数据
+          */
+    ```
+
+  * 发送请求：引入axios
+
+    ```js
+    import axios from 'axios';
+    //发送请求
+    axios.post('/api/login',{ username, password })
+    	.then(()=>{})
+    	.catch(()=>{})
+    ```
+
+  * 跨域：由于本地发送请求，客户端地址为localhost:3000，而服务器请求地址为:http://47.103.203.152
+
+    * 解决跨域：服务器代理
+
+    * 工作原理：
+
+      * 客户端发送请求到代理服务器(3000),由代理服务器转发请求到目标服务器上
+      * 目标服务器将响应给代理服务器，代理服务器将响应内容转发给客户端
+      * 客户端和代理服务器符合同源策略，没有跨域问题。 代理服务器和目标服务器又不存在跨域问题。      
+
+    * 使用
+
+      * 在 package.json 加上 proxy: "目标服务器地址"    
+      * 修改package.json, 要重启项目
+
+      ```js
+      //package.json
+      "proxy": "http://47.103.203.152"
+      
+      //发送请求
+      axios.post('/api/login',{ username, password })  //请求地址改为代理地址
+      	.then(()=>{})
+      	.catch(()=>{})
+      ```
+
+  * 请求成功与失败操作
+
+    * 请求成功后判断是否登录成功
+
+      * 登录成功，跳转home界面
+
+        * 路由组件有一个history属性，history属性上有push()和replace()方法
+
+        ```js
+        /* this.props.history.push('/');    //有历史记录可以回退 */
+        this.props.history.replace('/');    
+        ```
+
+      * 登录失败
+
+        * 提示登录失败原因
+
+          - 使用atnd的Message全局提示组件
+
+            ```js
+            import { message, Button } from 'antd';
+            
+            message.error('错误信息');
+            ```
+
+        * 清空密码输入区： form上resetFields()方法
+
+          ```
+          this.props.form.resetFields(['password']);
+          ```
+
+    * 请求失败
+
+      * 提示错误
+
+        * 使用atnd的Message全局提示组件
+
+          ````js
+          import { message, Button } from 'antd';
+          
+          message.error('错误信息');
+          ````
+
+      * 清空密码输入区： form上resetFields()方法
+
+        ```
+        this.props.form.resetFields(['password']);
+        ```
+
+        ##### 4

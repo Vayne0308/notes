@@ -1,6 +1,4 @@
----
 typora-root-url: image
----
 
 typora-root-url: image
 
@@ -68,7 +66,7 @@ typora-root-url: image
 
       ```js
       // 创建虚拟DOM对象
-      const  = .createElement('p', null, 'I Love You');
+      const  = React.createElement('p', null, 'I Love You');
       const vDom1 = React.createElement('div', {id: 'title1', className: 'title'}, vDom3);
       ```
 
@@ -165,13 +163,105 @@ typora-root-url: image
   * 为什么:  js代码更多更复杂
   * 作用: 复用js, 简化js的编写, 提高js运行效率
 
-* 组件
-  * 用来实现特定(局部)功能效果的代码集合(html/css/js)
-  * 为什么: 一个界面的功能更复杂
-  * 作用: 复用编码, 简化项目编码, 提高运行效率
-* 模块化
+* 模块化(详见node)
+
+  * 模块化:把一个庞大的js文件中每个功能拆分成多个功能,每个功能形成一个js文件,最终使用特定的语法引入这些js文件,此时形成模块化
+
+   * nodejs内部会帮助我们把每个js文件变成对应的一个模块
+
+   * 模块化有一个主文件(入口文件)：index.js/main.js/app.js，所有的模块都要通过入口文件来进行加载
+
+   * 模块化:模块的定义和引入模块
+
+      * 模块定义：定义模块,并暴露出去
+         * 语法:
+            * module.exports
+            * exports
+      * 引入模块:在某个js文件(某个模块)引入其他的模块
+         * 语法:
+            * const 变量名 = require(路径)
+
+   * 每个模块内部的数据都是私有的,外部是不可见的,想要让外部使用,必须要暴露出去
+
   * 当应用的js都以模块来编写的, 这个应用就是一个模块化的应用
+
+    >总结:
+    >
+    >如果只要暴露一个内容:module.exports=xxx--->xxx-------->最常用
+    >
+    >如果要暴露多个内容: exports.xxx=xxx->{xxx}
+    >
+    >其他方式:---->es6的对象简写语法
+    >
+    >module.exports={xxx}--------->多的时候这种比较好
+    >
+    >注意问题: require(路径可以省略.js后缀名字)，但是路径中的相对路径必须要写, ./ 不能省略
+    >
+    >模块分三种:
+    >
+    >​	1.自己定义的，引入路径必须以./或者../ 这种开头的
+    >
+    >​	2.nodejs自带的:直接写名称即可
+    >
+    >​	3.第三方的-->npm 下载的
+
+  * 模块化的方式:
+
+    - 1.CommonJS模块化
+
+      - CommonJS是属于同步加载，AMD是属于异步加载
+
+      - CommonJS可以直接在服务器端中执行,不能直接在浏览器端执行,如果想要在浏览器端执行,需要使用Browserify就可以了
+
+        ```js
+        // CommonJS-Node
+        
+        // 引入模块 index.js
+        const m1 = require('./module1.js') // 引入模块暴露的内容
+        const m2 = require('./module2.js')
+        console.log(m1) // [Function: sum] 是一个函数.函数名为sum
+        console.log(m2) //{ sub: [Function: sub] } 是一个对象,对象中有一个方法sub方法
+        console.log(m1(10, 20));
+        console.log(m2.sub(100, 10));
+        
+        //module1.js
+        function sum (a, b) {
+          return a + b
+        }
+        // module.exports = sum
+        // 注意问题:
+        module.exports.sum=sum // 外部报错信息: { sum: [Function: sum] } 此时暴露出去的是对象,外部如果想要使用,需要通过对象.sum()才能使用呢
+        
+        //module2.js
+        function sub (a, b) {
+          return a - b
+        }
+         exports.sub = sub
+        // 注意 
+        // exports=sub // 暴露出去的是一个空对象,是不能使用的 报错信息:m2.sub is not a function
+        ```
+
+    - 2.ES6模块化
+
+      - ES6模块化不能直接在服务器端执行,也不能直接在浏览器端执行,需要使用Babel进行编译,之后才可以在服务器端执行,通过Browserify可以在浏览器端执行
+
+    - 3.AMD
+
+      - AMD可以直接在浏览器端中执行,但是需要配合require.js文件
+
+    - 4.CMD
+
+      - AMD和CMD是为了直接在浏览器中执行而诞生的
+      - CMD可以直接在浏览器端中执行,但是需要配合sea.js文件
+
+* 组件
+
+  - 用来实现特定(局部)功能效果的代码集合(html/css/js)
+  - 为什么: 一个界面的功能更复杂
+  - 作用: 复用编码, 简化项目编码, 提高运行效率
+
 * 组件化
+
   * 当应用是以多组件的方式实现, 这个应用就是一个组件化的应用
 
 ### 2.React面向组件编程
@@ -1378,44 +1468,39 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
 
 ##### 常用的ajax请求库
 
-* jQuery: 比较重, 如果需要另外引入不建议使用
+###### jQuery
 
-* axios: 轻量级, 建议使用
-  * 封装XmlHttpRequest对象的ajax
+* 比较重, 如果需要另外引入不建议使用
 
-  * promise风格
+###### axios
 
-  * 可以用在浏览器端和node服务器端
+* 轻量级, 建议使用
 
-  * 查看文档地址：https://github.com/axios/axios
+* 封装XmlHttpRequest对象的ajax
 
-    ```js
-    //get请求1
-    axios.get('/user?ID=12345')
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    
-    //get请求2
-    axios.get('/user', {
-        params: {
-          ID: 12345
-        }
-      })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    
-    //post请求
-    axios.post('/user', {
-        firstName: 'Fred',
-        lastName: 'Flintstone'
+* promise风格
+
+* 可以用在浏览器端和node服务器端
+
+* 查看文档地址：https://github.com/axios/axios
+
+* 下载axios文件或cdn引入：npm i  axios
+
+  ```js
+  //get请求1
+  axios.get('/user?ID=12345')
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  
+  //get请求2
+  axios.get('/user', {
+      params: {
+        ID: 12345
+      }
     })
     .then(function (response) {
       console.log(response);
@@ -1423,347 +1508,695 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
     .catch(function (error) {
       console.log(error);
     });
-    ```
+  
+  //post请求
+  axios.post('/user', {
+      firstName: 'Fred',
+      lastName: 'Flintstone'
+  })
+  .then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+  ```
 
-* fetch: 原生函数, 但老版本浏览器不支持
-  * 不再使用XmlHttpRequest对象提交ajax请求
+######  axios拦截器
 
-  * 为了兼容低版本的浏览器, 可以引入兼容库fetch.js
+* 是一个拦截请求/响应的函数
 
-  * 查看文档：https://github.github.io/fetch/
+* 作用：
 
-    ```js
-    //get请求
-    fetch(url).then(function(response) {
-      return response.json()
-    }).then(function(data) {
-      console.log(data)
-    }).catch(function(e) {
-      console.log(e)
-    });
-    
-    //post请求
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-    }).then(function(data) {
-      console.log(data)
-    }).catch(function(e) {
-      console.log(e)
-    })
-    ```
+  * 作为请求拦截器：设置公共的请求头 / 参数...
+  * 作为响应拦截器：
 
-    ###### 案例1:搜索匹配的最受关注的库
+* 执行流程；
+  * 执行请求拦截器函数
+  * 发送请求
+  * 执行响应拦截器函数（接受到了响应）
+  * 执行 axiosInstance().then()/catch()
 
-    ```js
-    /*
-    需求:
-      1. 界面效果如下
-      2. 根据指定的关键字在github上搜索匹配的最受关注的库
-      3. 显示库名, 点击链接查看库
-      4. 测试接口: https://api.github.com/search/repositories?q=r&sort=stars
-    */
-    <!DOCTYPE html>
-    <html>
-        <head>
-          <meta charset="UTF-8">
-          <title>11_ajax</title>
-        </head>
-        <body>
-          <div id="example"></div>
-    
-          <script type="text/javascript" src="../js/react.development.js"></script>
-          <script type="text/javascript" src="../js/react-dom.development.js"></script>
-          <!-- <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script> -->
-          <script src="https://cdn.bootcss.com/fetch/2.0.4/fetch.min.js"></script>
-          <script type="text/javascript" src="../js/babel.min.js"></script>
-          <script type="text/babel">
-              class MostStar extends React.Component{
-                  state={
-                      isLoading:false, //是否在请求中
-                      repo:{
-                          name:'',
-                          url:''
-                      }
-                  }
-    				
-    			//发生ajax请求，需在componentDidMount回调函数中
-                componentDidMount(){
-    				//发送请求前，切换成loading
-                    this.setState({
-                        isLoading: true
-                    })
-                    /*
-                    //通过axios请求库
-                   axios.get('https://api.github.com/search/repositories?q=r&sort=stars')
-                       .then((response)=>{
-                       		const {name,html_url} = response.data.items[0];
-                       		//请求成功，将loading切换成false
-                           this.setState({
-    							isLoading:false, 
-                                repo:{
-                                    name,
-                                    url:html_url
-                                }
-                           })
-                   		})
-                    	.catch((err)=>{console.log(err)})	
-                     */
-                    //通过fetch请求库发送请求
-                    fetch('https://api.github.com/search/repositories?q=r&sort=stars')
-                    	// 将响应数据转换成json --> 对象
-                    	.then((response)=>response.json())
-                        .then(()=>{
-                        	const {name,html_url} = response.data.items[0];
-                       		//请求成功，将loading切换成false
-                            this.setState({
-                                isLoading:false, 
-                                repo:{
-                                    name,
-                                    url:html_url
-                                }
-                            })
-                   		 })
-                    	.catch((err)=>{console.log(err)})
-                }
-                render(){
-    				/* isLoading: loading 对this.state进行结构赋值，提取isLoading属性，赋值
-                    给变量loading （将isLoading重命名为loading）
-          			 repo : { name, url } 对this.state进行结构赋值，提取repo属性，在repo
-                    进行结构赋值，提取name,url属性
-                    */
-                  const { isLoading: loading, repo : { name, url }} = this.state;
-    
-                  if (loading) {
-                    return <h1>loading...</h1>;
-                  } else {
-                    return <h1>Most Star Repo is <a href={url}>{name}</a></h1>
-                  }
-    
-                }
-              }
-              
-              ReactDOM.render(<MostStar />,document.getElementById('example'))
-          </script>
-    	</body>
-    </html>
-    ```
+  > axios发送POST请求，
+  >   默认的content-type： application/json 请求体是json
+  >   有可能发送POST请求，需要的Content-type是 application/x-www-form-urlencoded
+  >
+  > ```js
+  > //json请求类型时的请求体参数设置
+  > data: {
+  >         username: 'admin',
+  >         password: 'admin'
+  >       }
+  > //若是form表单类型    
+  > data: 'username=admin&password=admin',
+  > headers: {
+  >         'content-type': 'application/x-www-form-urlencoded'
+  >     } 
+  > 1.为了实现可以满足以上两种方式，一般在设置请求体参数时还是使用对象的方式，在拦截器时对data数据转换
+  > data: {
+  >         username: 'admin',
+  >         password: 'admin'
+  >       }
+  > 2.只有在post请求下才需要改
+  > if (config.method === 'post') {
+  >         // 修改请求参数
+  >         /*
+  >         {
+  >           username: 'admin',
+  >           password: 'admin'
+  >         }
+  >           --->  'username=admin&password=admin'
+  >         */
+  >         // ['username', 'password']
+  >         const keys = Object.keys(config.data);
+  >         const data = keys
+  >           .reduce((prev, curr) => {
+  >             prev += `&${curr}=${config.data[curr]}`;
+  >             return prev;
+  >           }, '')
+  >           .slice(1);
+  >         config.data = data;
+  >         config.headers['content-type'] = 'application/x-www-form-urlencoded';
+  >       }
+  > 
+  >       return config;
+  >     }
+  > ```
 
-    ###### 案例2-获取github用户名及头像等信息
-
-    ```js
-    //拆分组件
-    App
-        * state: searchName/string
-    Search
-        * props: setSearchName/func
-    List
-        * props: searchName/string
-            * state: firstView/bool, loading/bool, users/array, errMsg/string
-    ```
-
-    ```js
-    //index.js文件
-    import React from 'react';
-    import ReactDom from 'react-dom';
-    
-    import App from './App';
-    
-    ReactDom.render(<App />, document.getElementById('app'))
-    ```
-
-    ```jsx
-    //APP.jsx文件
-    import React, { Component } from 'react';
-    
-    import Search from './components/search';
-    import List from './components/list';
-    
-    export default class App extends Component {
-      state = {
-        searchName: ''
+  ```js
+  //1.引入axios是Axios的实例，里面包含axios默认配置
+  import axios from 'axios';
+  
+  //2.自己创建axios实例，可以修改axios默认配置
+    const axiosInstance = axios.create({
+      baseURL: '/api', // 基础路径（公共路径）: 后面所有请求路径都会以 baseURL 开头
+      timeout: 20000, // 20s: 请求超时时间: 请求一旦超过10s还没有响应，就会自动中断请求
+      headers: {
+        // 公共的请求头
+        // 参数必须写死
       }
-      // 更新state的方法
-      update = (searchName) => {
-        this.setState({
-          searchName
+    });
+  
+    //3.设置拦截器
+  
+    //3.1请求拦截器(在发送请求之前调用)
+    axiosInstance.interceptors.request.use(
+      //3.1.1 设置发送请求，代码成功（还没有发送请求）
+      config => {
+        /* config是一个对象，里面包含所有发送请求的配置
+           修改config配置
+           添加动态headers参数
+  	  */
+        // console.log(config);
+        //有token才添加动态headers参数
+        if (token) {
+          config.headers.authorization = `Bearer ${token}`;
+        }
+  
+        /*
+          看接口是否是必须使用'application/x-www-form-urlencoded'发送请求
+        */
+        if (config.method === 'post') {
+          // 修改请求参数
+          /*
+          {
+            username: 'admin',
+            password: 'admin'
+          }
+            --->  'username=admin&password=admin'
+          */
+          // ['username', 'password']
+          const keys = Object.keys(config.data);
+          const data = keys
+            .reduce((prev, curr) => {
+              prev += `&${curr}=${config.data[curr]}`;
+              return prev;
+            }, '')
+            .slice(1);
+          config.data = data;
+          config.headers['content-type'] = 'application/x-www-form-urlencoded';
+        }
+  
+        return config;
+      }
+      //3.1.2 设置发送请求，代码失败，一般是不会有问题的，所以这个函数没啥用
+      (error) => {
+        // error失败的原因，返回一个失败的promise对象
+        return Promise.reject(err);
+      } 
+    );
+  
+    //3.2 响应拦截器(返回响应之后，触发axiosInstance.then/catch之前调用)
+    /*
+      统一处理错误
+    */
+    axiosInstance.interceptors.response.use(
+      // 请求/响应成功 --> 2xx
+      response => {
+        if (response.data.status === 0) {
+          return response.data.data;
+        } else {
+          // 功能失败
+          return Promise.reject(response.data.msg);
+        }
+      },
+      // 请求/响应失败 --> 4xx 5xx
+      err => {
+        /*
+          Network Error 网络错误  err.message
+          err.response.status === 401  / err.message 401  没有token/token有问题
+          "timeout of 10ms exceeded" err.message  请求超时
+  
+          根据不同的错误，返回不同的错误提示
+        */
+        // console.log('响应拦截器失败回调触发了~');
+        // console.dir(err);
+  
+        const errCode = {
+          401: '没有权限访问当前接口',
+          403: '禁止访问当前接口',
+          404: '当前资源未找到',
+          500: '服务器发生未知错误，请联系管理员'
+        };
+  
+        let errMessage = '';
+  
+        if (err.response) {
+          // 说明接受到了响应，响应是失败的响应
+          // 根据响应状态码判断错误 401 403 404 500
+          errMessage = errCode[err.response.status];
+        } else {
+          // 说明没有接受到响应，请求就失败了
+  
+          if (err.message.indexOf('Network Error') !== -1) {
+            errMessage = '网络连接失败，请重连网络试试~';
+          } else if (err.message.indexOf('timeout') !== -1) {
+            errMessage = '网络超时，请连上wifi重试~';
+          }
+        }
+  
+        return Promise.reject(errMessage || '发生未知错误，请联系管理员');
+      }
+    );
+  
+  let token = '';
+    let id = '';
+  
+    const handleClick1 = () => {
+      //4.发送请求使用axiosInstance
+      axiosInstance({
+        method: 'POST',
+        url: '/login',
+        data: {
+          username: 'admin',
+          password: 'admin'
+        }
+          
+        // data: 'username=admin&password=admin',
+          
+        /* 拦截器在发送请求前已经在config中添加勒动态headers参数
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        } */
+      })
+        .then(response => {
+          console.log(response);
+  
+          /* if (response.data.status === 0) {
+            token = response.data.data.token;
+            message.success('登录成功');
+          } else {
+            message.error(response.data.msg);
+          } */
         })
-      }	
+        .catch(err => {
+          console.log(err);
+          message.error(err);
+        });
+    };
+  ```
+
+  
+
+###### fetch
+
+* 原生函数, 但老版本浏览器不支持
+
+* 不再使用XmlHttpRequest对象提交ajax请求
+
+* 为了兼容低版本的浏览器, 可以引入兼容库fetch.js
+
+* 查看文档：https://github.github.io/fetch/
+
+  ```js
+  //get请求
+  fetch(url).then(function(response) {
+    return response.json()
+  }).then(function(data) {
+    console.log(data)
+  }).catch(function(e) {
+    console.log(e)
+  });
+  
+  //post请求
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }).then(function(data) {
+    console.log(data)
+  }).catch(function(e) {
+    console.log(e)
+  })
+  ```
+
+  ###### 案例1:搜索匹配的最受关注的库
+
+  ```js
+  /*
+  需求:
+    1. 界面效果如下
+    2. 根据指定的关键字在github上搜索匹配的最受关注的库
+    3. 显示库名, 点击链接查看库
+    4. 测试接口: https://api.github.com/search/repositories?q=r&sort=stars
+  */
+  <!DOCTYPE html>
+  <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>11_ajax</title>
+      </head>
+      <body>
+        <div id="example"></div>
+  
+        <script type="text/javascript" src="../js/react.development.js"></script>
+        <script type="text/javascript" src="../js/react-dom.development.js"></script>
+        <!-- <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script> -->
+        <script src="https://cdn.bootcss.com/fetch/2.0.4/fetch.min.js"></script>
+        <script type="text/javascript" src="../js/babel.min.js"></script>
+        <script type="text/babel">
+            class MostStar extends React.Component{
+                state={
+                    isLoading:false, //是否在请求中
+                    repo:{
+                        name:'',
+                        url:''
+                    }
+                }
+  				
+  			//发生ajax请求，需在componentDidMount回调函数中
+              componentDidMount(){
+  				//发送请求前，切换成loading
+                  this.setState({
+                      isLoading: true
+                  })
+                  /*
+                  //通过axios请求库
+                 axios.get('https://api.github.com/search/repositories?q=r&sort=stars')
+                     .then((response)=>{
+                     		const {name,html_url} = response.data.items[0];
+                     		//请求成功，将loading切换成false
+                         this.setState({
+  							isLoading:false, 
+                              repo:{
+                                  name,
+                                  url:html_url
+                              }
+                         })
+                 		})
+                  	.catch((err)=>{console.log(err)})	
+                   */
+                  //通过fetch请求库发送请求
+                  fetch('https://api.github.com/search/repositories?q=r&sort=stars')
+                  	// 将响应数据转换成json --> 对象
+                  	.then((response)=>response.json())
+                      .then(()=>{
+                      	const {name,html_url} = response.data.items[0];
+                     		//请求成功，将loading切换成false
+                          this.setState({
+                              isLoading:false, 
+                              repo:{
+                                  name,
+                                  url:html_url
+                              }
+                          })
+                 		 })
+                  	.catch((err)=>{console.log(err)})
+              }
+              render(){
+  				/* isLoading: loading 对this.state进行结构赋值，提取isLoading属性，赋值
+                  给变量loading （将isLoading重命名为loading）
+        			 repo : { name, url } 对this.state进行结构赋值，提取repo属性，在repo
+                  进行结构赋值，提取name,url属性
+                  */
+                const { isLoading: loading, repo : { name, url }} = this.state;
+  
+                if (loading) {
+                  return <h1>loading...</h1>;
+                } else {
+                  return <h1>Most Star Repo is <a href={url}>{name}</a></h1>
+                }
+  
+              }
+            }
+            
+            ReactDOM.render(<MostStar />,document.getElementById('example'))
+        </script>
+  	</body>
+  </html>
+  ```
+
+  ###### 案例2-获取github用户名及头像等信息
+
+  ```js
+  //拆分组件
+  App
+      * state: searchName/string
+  Search
+      * props: setSearchName/func
+  List
+      * props: searchName/string
+          * state: firstView/bool, loading/bool, users/array, errMsg/string
+  ```
+
+  ```js
+  //index.js文件
+  import React from 'react';
+  import ReactDom from 'react-dom';
+  
+  import App from './App';
+  
+  ReactDom.render(<App />, document.getElementById('app'))
+  ```
+
+  ```jsx
+  //APP.jsx文件
+  import React, { Component } from 'react';
+  
+  import Search from './components/search';
+  import List from './components/list';
+  
+  export default class App extends Component {
+    state = {
+      searchName: ''
+    }
+    // 更新state的方法
+    update = (searchName) => {
+      this.setState({
+        searchName
+      })
+    }	
+    
+    render() {
+      return (
+        <div className='container'>
+          <Search update={this.update}/>
+          <List searchName={this.state.searchName}/>
+        </div>
+      );
+    }
+  }
+  ```
+
+  ```jsx
+  //Search.jsx文件
+  import React, { Component } from 'react';
+  import PropTypes from 'prop-types';
+  
+  export default class Search extends Component {
+    static propTypes = {
+      update: PropTypes.func.isRequired
+    };
+  
+  state = {
+      searchName: ''
+    };
+  
+    search = () => {
+      // 获取用户输入的值
+      const { searchName } = this.state;
       
-      render() {
+      if (!searchName) return;
+  
+      // 调用父组件方法
+      this.props.update(searchName);
+    };
+  
+    handleChange = e => {
+      this.setState({
+        searchName: e.target.value
+      });
+    };
+  
+    render() {
+      return (
+        <section className='jumbotron'>
+          <h3 className='jumbotron-heading'>Search Github Users</h3>
+          <div>
+            <input
+              type='text'
+              placeholder='enter the name you search'
+              onChange={this.handleChange}
+            />
+            <button onClick={this.search}>Search</button>
+          </div>
+        </section>
+      );
+    }
+  }
+  ```
+
+  ```jsx
+  //List.jsx文件
+  import React, { Component } from 'react';
+  import PropTypes from 'prop-types';
+  import axios from 'axios';
+  
+  export default class List extends Component {
+    static propTypes = {
+      searchName: PropTypes.string.isRequired
+    };
+  
+    state = {
+      isLoading: false,
+      users: []
+    };
+  
+    UNSAFE_componentWillReceiveProps(nextProps) {
+      console.log(nextProps); // 代表最新的props {searchName: 'aaa'}
+      // console.log(this.props); // 代表上一次的props
+  
+      // 发送请求之前更新成 loading 状态
+      this.setState({
+        isLoading: true
+      });
+      // 发送请求，请求数据
+      axios
+        .get('https://api.github.com/searchssss/users', {
+          params: {
+            q: nextProps.searchName
+          }
+        })
+        .then(response => {
+          // map方便遍历想要保留的数据
+          // console.log(response.data);
+          
+          const result = response.data.items.map(item => {
+            return {
+              name: item.login,
+              url: item.html_url,
+              img: item.avatar_url
+            };
+          });
+          // console.log(result);
+  
+          // 更新state
+          this.setState({
+            users: result,
+            isLoading: false
+          });
+        })
+        .catch(error => {
+  
+          this.setState({
+            isLoading: false
+          })
+          
+          alert('网络出现故障~');
+        });
+    }
+  
+    render() {
+      const { isLoading, users } = this.state;
+  
+      if (isLoading) {
+        return <h1>loading...</h1>;
+      }
+  
+      if (users.length) {
         return (
-          <div className='container'>
-            <Search update={this.update}/>
-            <List searchName={this.state.searchName}/>
+          <div className='row'>
+            {users.map((user, index) => {
+              return (
+                <div className='card' key={index}>
+                  <a href={user.url}>
+                    <img src={user.img} style={{ width: 100 }} />
+                  </a>
+                  <p className='card-text'>{user.name}</p>
+                </div>
+              );
+            })}
           </div>
         );
       }
+  
+      return <h1>enter name to search</h1>;
     }
-    ```
-
-    ```jsx
-    //Search.jsx文件
-    import React, { Component } from 'react';
-    import PropTypes from 'prop-types';
-    
-    export default class Search extends Component {
-      static propTypes = {
-        update: PropTypes.func.isRequired
-      };
-    
-    state = {
-        searchName: ''
-      };
-    
-      search = () => {
-        // 获取用户输入的值
-        const { searchName } = this.state;
-        
-        if (!searchName) return;
-    
-        // 调用父组件方法
-        this.props.update(searchName);
-      };
-    
-      handleChange = e => {
-        this.setState({
-          searchName: e.target.value
-        });
-      };
-    
-      render() {
-        return (
-          <section className='jumbotron'>
-            <h3 className='jumbotron-heading'>Search Github Users</h3>
-            <div>
-              <input
-                type='text'
-                placeholder='enter the name you search'
-                onChange={this.handleChange}
-              />
-              <button onClick={this.search}>Search</button>
-            </div>
-          </section>
-        );
-      }
-    }
-    ```
-
-    ```jsx
-    //List.jsx文件
-    import React, { Component } from 'react';
-    import PropTypes from 'prop-types';
-    import axios from 'axios';
-    
-    export default class List extends Component {
-      static propTypes = {
-        searchName: PropTypes.string.isRequired
-      };
-    
-      state = {
-        isLoading: false,
-        users: []
-      };
-    
-      UNSAFE_componentWillReceiveProps(nextProps) {
-        console.log(nextProps); // 代表最新的props {searchName: 'aaa'}
-        // console.log(this.props); // 代表上一次的props
-    
-        // 发送请求之前更新成 loading 状态
-        this.setState({
-          isLoading: true
-        });
-        // 发送请求，请求数据
-        axios
-          .get('https://api.github.com/searchssss/users', {
-            params: {
-              q: nextProps.searchName
-            }
-          })
-          .then(response => {
-            // map方便遍历想要保留的数据
-            // console.log(response.data);
-            
-            const result = response.data.items.map(item => {
-              return {
-                name: item.login,
-                url: item.html_url,
-                img: item.avatar_url
-              };
-            });
-            // console.log(result);
-    
-            // 更新state
-            this.setState({
-              users: result,
-              isLoading: false
-            });
-          })
-          .catch(error => {
-    
-            this.setState({
-              isLoading: false
-            })
-            
-            alert('网络出现故障~');
-          });
-      }
-    
-      render() {
-        const { isLoading, users } = this.state;
-    
-        if (isLoading) {
-          return <h1>loading...</h1>;
-        }
-    
-        if (users.length) {
-          return (
-            <div className='row'>
-              {users.map((user, index) => {
-                return (
-                  <div className='card' key={index}>
-                    <a href={user.url}>
-                      <img src={user.img} style={{ width: 100 }} />
-                    </a>
-                    <p className='card-text'>{user.name}</p>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        }
-    
-        return <h1>enter name to search</h1>;
-      }
-    }
-    ```
+  }
+  ```
 
 ### 6.重要技术总结
 
 #### 6.1 组件间通信
 
-* 通过props传递
+- 一般数据-->父组件传递数据给子组件-->子组件读取数据
+- 函数数据-->子组件传递数据给父组件-->子组件调用函数
 
-  * 共同的数据放在父组件上，特有的数据放在自己组件内部（state）
-  * 通过props可以传递一般数据和函数数据，只能一层一层传递
-  * 一般数据-->父组件传递数据给子组件-->子组件读取数据
-  * 函数数据-->子组件传递数据给父组件-->子组件调用函数
+###### 通过props传递
 
-* 使用消息订阅(subscribe)-发布(publish)机制
+* 适用于父子组件间通信
 
-  * 工具库: PubSubJS
+* 共同的数据放在父组件上，特有的数据放在自己组件内部（state）
+* 通过props可以传递一般数据和函数数据，只能一层一层传递
 
-  * 下载: npm install pubsub-js --save
+###### 使用消息订阅(subscribe)-发布(publish)机制
 
-  * 使用: 
+* 适用于祖孙组件间通信
 
-    * import PubSub from 'pubsub-js' //引入
+* 工具库: PubSubJS
 
-    * PubSub.subscribe('delete', function(data){ });  //订阅(接收数据)
+* 下载: npm install pubsub-js --save
 
-    * PubSub.publish('delete', data)   //发布消息
+* 使用: 
 
-* redux
+  * import PubSub from 'pubsub-js' //引入
+
+  * PubSub.subscribe('delete', function(data){ });  //订阅(接收数据)
+
+  * PubSub.publish('delete', data)   //发布消息
+
+
+###### redux
+
+###### context
+
+* 一般使用redux，content为了开发库而使用
+
+- 适用于祖孙组件间通信
+
+- react的内置方案，因此不需要下载依赖
+
+- 步骤：
+
+  - 创建context文件夹user.js文件
+
+    - 初始化context
+
+      ```js
+      //初始化context
+      
+      import { createContext } from 'react';
+      
+      // 创建context
+      const userContext = createContext();
+      
+      export default userContext;
+      ```
+
+  - 设置state初始化状态
+
+    ```js
+    //App.js
+    state = {
+        user: {
+          name: 'laofu',
+          age: 40
+        },
+        food: 'apple'
+      };
+    ```
+
+  - 在App.js引入userContext
+
+    - userContext是一个对象，对象上有两个组件
+          Provider 提供者（发布消息）
+          Consumer 消费者（订阅消息）
+
+    ```js
+    import userContext from './context/user';
+    ```
+
+  - 给子组件传递数据
+
+    - Provider组件可以给其子组件传递数据 ，将user数据传递给 需要使用这个数据的子组件
+
+    ```js
+    render() {
+        return (
+            <div>
+                App...
+                {/* 
+                      Provider组件可以给其子组件传递数据 
+                      将user数据传递给 需要使用这个数据的子组件
+                    */}
+                {/* <foodContext.Provider > */}
+                <userContext.Provider value={this.state.user}>
+                    <A />
+                </userContext.Provider>
+            {/* </foodContext.Provider> */}
+            </div>
+        );
+    }
+    ```
+
+  - 子组件需对其消费操作
+
+    ```js
+    import userContext from '../../context/user';
+    
+    render() {
+        return (
+          	/*
+            <div>
+            <userContext.Consumer>
+              {// 内部会调用下面函数，调用函数时，会将Provider传递的数据作为参数传入}
+              user => {
+                console.log(user);
+                // 返回值就是要渲染的内容
+                return (
+                  <div>
+                    <p>姓名: {user.name}</p>
+                    <p>年龄: {user.age}</p>
+                  </div>
+                );
+              }}
+            </userContext.Consumer>
+    	 </div>
+    	 */
+             //简单方式
+             static contextType = userContext;
+            // 内部Provider提供的值就会挂载到this.context上
+            const user = this.context;
+              <div>
+                <div>
+                  <p>姓名: {user.name}</p>
+                  <p>年龄: {user.age}</p>
+                </div>
+              </div>
+    	)
+    }
+    ```
+
+    
 
 #### 6.2 ES6常用新语法
 
@@ -1786,45 +2219,45 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
 
 ### 7. react-router5
 
-* react-router
+##### react-router
 
-  * react的一个插件库
-  * 专门用来实现一个SPA应用
-  * 基于react的项目基本都会使用的库
+* react的一个插件库
+* 专门用来实现一个SPA应用
+* 基于react的项目基本都会使用的库
 
-* SPA
+##### SPA
 
-  * 单页web应用（single page web application）
-  * 整个应用只有一个完整的页面
-  * 点击页面中的链接都不会刷新页面，本身也不会向服务器发送请求
-  * 当点击路由链接时，只会做页面的局部更新，网址也会对应的改变
-  * 数据都需要通过ajax请求获取，并在前端异步展现
+* 单页web应用（single page web application）
+* 整个应用只有一个完整的页面
+* 点击页面中的链接都不会刷新页面，本身也不会向服务器发送请求
+* 当点击路由链接时，只会做页面的局部更新，网址也会对应的改变
+* 数据都需要通过ajax请求获取，并在前端异步展现
 
-* 路由
+#####　路由
 
-  * 什么是路由
+* 什么是路由
 
-    * 一个路由就是一个映射关系(key:value)
+  * 一个路由就是一个映射关系(key:value)
 
-    * key为路由路径, value可能是function/component
+  * key为路由路径, value可能是function/component
 
-  * 路由分类
+* 路由分类
 
-    * 后台路由: node服务器端路由, value是function, 用来处理客户端提交的请求并返回一个响应数据
+  * 后台路由: node服务器端路由, value是function, 用来处理客户端提交的请求并返回一个响应数据
 
-    * 前台路由: 浏览器端路由, value是component, 当请求的是路由path时, 浏览器端前没有发送http请求, 但界面会更新显示对应的组件 
+  * 前台路由: 浏览器端路由, value是component, 当请求的是路由path时, 浏览器端前没有发送http请求, 但界面会更新显示对应的组件 
 
-  * 后台路由
+* 后台路由
 
-    * 注册路由: router.get(path, function(req, res))
+  * 注册路由: router.get(path, function(req, res))
 
-    * 当node接收到一个请求时, 根据请求路径找到匹配的路由, 调用路由中的函数来处理请求, 返回响应数据
+  * 当node接收到一个请求时, 根据请求路径找到匹配的路由, 调用路由中的函数来处理请求, 返回响应数据
 
-  * 前端路由
+* 前端路由
 
-    * 注册路由: <Route path="/about" component={About} />
+  * 注册路由: <Route path="/about" component={About} />
 
-    * 当浏览器的hash变为#/about时, 当前路由组件就会变为About组件
+  * 当浏览器的hash变为#/about时, 当前路由组件就会变为About组件
 
 * 前端路由的原理
 
@@ -1908,76 +2341,76 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
     </html>
     ```
 
-* 路由相关组件
+##### 路由相关组件
 
-  * 下载react-router-dom:
-    npm install --save react-router-dom
+* 下载react-router-dom:
+  npm install --save react-router-dom
 
-  * App中引入组件：
+* App中引入组件：
 
-    ```
-    import {
-          BrowserRouter as Router, // 引入 BrowserRouter 重命名为 Router
-          HashRouter,
-          Route,
-          Redirect,
-          Switch
-    } from 'react-router-dom';
-    ```
+  ```
+  import {
+        BrowserRouter as Router, // 引入 BrowserRouter 重命名为 Router
+        HashRouter,
+        Route,
+        Redirect,
+        Switch
+  } from 'react-router-dom';
+  ```
 
-  * 组件
+###### 组件
 
-    * BrowserRouter history模式
+* BrowserRouter history模式
 
-    * HashRouter hash模式
+* HashRouter hash模式
 
-      * Router 要求必须在最外面使用。（目的：为了包裹所有组件 --> 为了让其他所有组件都是Router的子组件，这样就能得到history对象）
+  * Router 要求必须在最外面使用。（目的：为了包裹所有组件 --> 为了让其他所有组件都是Router的子组件，这样就能得到history对象）
 
-    * Route  根据url的变化加载组件  
+* Route  根据url的变化加载组件  
 
-      * path参数：路径，以该路径开头就可以匹配
-      * exact参数：必须是path参数路径才可以匹配
-      * component参数：跳转的组件
+  * path参数：路径，以该路径开头就可以匹配
+  * exact参数：必须是path参数路径才可以匹配
+  * component参数：跳转的组件
 
-      ```
+  ```
+  <Route path='/about' component={About} />
+  ```
+
+* Redirect 重定向: 能匹配所有路径，匹配上就修改url地址
+
+  ```
+  <Redirect to='/about' />
+  ```
+
+* Switch  切换。
+
+  * 正常情况下，可以匹配多个Route
+  * 加了Switch，就只能匹配一个, 从上到下匹配
+
+  ```
+  <Switch>
       <Route path='/about' component={About} />
-      ```
-
-    * Redirect 重定向: 能匹配所有路径，匹配上就修改url地址
-
-      ```
+      <Route path='/home' component={Home} />
       <Redirect to='/about' />
-      ```
+  </Switch>
+  ```
 
-    * Switch  切换。
+* NavLink 
 
-      * 正常情况下，可以匹配多个Route
-      * 加了Switch，就只能匹配一个, 从上到下匹配
+  * 更新浏览器历史记录
+  *  在Link基础上，多一个 active class 
 
-      ```
-      <Switch>
-          <Route path='/about' component={About} />
-          <Route path='/home' component={Home} />
-          <Redirect to='/about' />
-      </Switch>
-      ```
+* Link
 
-    * NavLink 
+  * 不会刷新页面，不会跳转网址，不会发送请求。
 
-      * 更新浏览器历史记录
-      *  在Link基础上，多一个 active class 
+  * 只能更新 浏览器历史记录（url地址） 
 
-    * Link
+* 更新浏览器历史记录有两种方式：
 
-      * 不会刷新页面，不会跳转网址，不会发送请求。
+  * NavLink / Link  ：适用于仅更新记录不进行任何操作
 
-      * 只能更新 浏览器历史记录（url地址） 
-
-  * 更新浏览器历史记录有两种方式：
-
-    * NavLink / Link  ：适用于仅更新记录不进行任何操作
-
-    * this.props.history.push('/home')
+  * this.props.history.push('/home')
 
 * 路由组件
 
@@ -1996,7 +2429,7 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
     * match
       * params: {id: 1}
 
-### 8.react-ui
+### 8.react-ui-antd
 
 * material-ui(国外)
   * 官网: <http://www.material-ui.com/#/>
@@ -2006,106 +2439,108 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
   * PC官网: <https://ant.design/index-cn>
   * Github:https://github.com/ant-design/ant-design/>
 
-* ant-design使用
+#### ant-design使用
 
-  * 搭建antd的基本开发环境
+* 搭建antd的基本开发环境
 
-    * 下载：npm install antd --save
+  * 下载：npm install antd --save
 
-  * 使用antd组件库
+* 使用antd组件库
+
+  ```js
+  //index.js文件
+  import React from 'react';
+  import ReactDOM from 'react-dom'
+  import App from "./App"
+  // 引入整体css
+  import 'antd/dist/antd.css'
+  
+  ReactDOM.render(<App />, document.getElementById('root'))
+  ```
+
+  ```js
+  //App.jsx文件
+  import React, {Component} from 'react'
+  // 分别引入需要使用的组件
+  import { Button, message } from 'antd'
+  
+  export default class App extends Component {
+    handleClick = () => {
+      message.success('点击按钮~~', 2);
+    }
+  
+    render() {
+      return (
+        <div>
+          <Button type="primary" onClick={this.handleClick}>提交</Button>
+        </div>
+      )
+    }
+  }
+  ```
+
+* 实现按需打包(组件js/css)
+
+  * 下载依赖包：yarn add react-app-rewired customize-cra babel-plugin-import --dev
+
+  * 修改默认配置:  
 
     ```js
-    //index.js文件
-    import React from 'react';
-    import ReactDOM from 'react-dom'
-    import App from "./App"
-    // 引入整体css
-    import 'antd/dist/antd.css'
-    
-    ReactDOM.render(<App />, document.getElementById('root'))
-    ```
-
-    ```js
-    //App.jsx文件
-    import React, {Component} from 'react'
-    // 分别引入需要使用的组件
-    import { Button, message } from 'antd'
-    
-    export default class App extends Component {
-      handleClick = () => {
-        message.success('点击按钮~~', 2);
-      }
-    
-      render() {
-        return (
-          <div>
-            <Button type="primary" onClick={this.handleClick}>提交</Button>
-          </div>
-        )
-      }
+    //package.json文件
+    "scripts": {
+      "start": "react-app-rewired start",
+      "build": "react-app-rewired build",
+      "test": "react-app-rewired test"
     }
     ```
 
-  * 实现按需打包(组件js/css)
+    ```js
+    //config-overrides.js文件
+    const { override, fixBabelImports } = require('customizecra');
+    
+    module.exports = override(
+      fixBabelImports('import', {
+        libraryName: 'antd',
+        libraryDirectory: 'es',
+        style: 'css',
+      }),
+    );
+    ```
 
-    * 下载依赖包：yarn add react-app-rewired customize-cra babel-plugin-import --dev
+    ```jsx
+    //App.jsx文件
+    // import 'antd/dist/antd.css'
+    
+    import {Button, message} from 'antd'
+    ```
 
-    * 修改默认配置:  
+* 自定义主题
 
-      ```js
-      //package.json文件
-      "scripts": {
-        "start": "react-app-rewired start",
-        "build": "react-app-rewired build",
-        "test": "react-app-rewired test"
-      }
-      ```
+  * 下载依赖包：yarn add less less-loader --dev
 
-      ```js
-      //config-overrides.js文件
-      const { override, fixBabelImports } = require('customizecra');
-      
-      module.exports = override(
-        fixBabelImports('import', {
-          libraryName: 'antd',
-          libraryDirectory: 'es',
-          style: 'css',
-        }),
-      );
-      ```
+  * 修改默认配置: 
 
-      ```jsx
-      //App.jsx文件
-      // import 'antd/dist/antd.css'
-      
-      import {Button, message} from 'antd'
-      ```
-
-  * 自定义主题
-
-    * 下载依赖包：yarn add less less-loader --dev
-
-    * 修改默认配置: 
-
-      ```js
-      //config-overrides.js 文件
-      const { override, fixBabelImports } = require('customizecra');
-      
-      module.exports = override(
-        fixBabelImports('import', {
-          libraryName: 'antd',
-          libraryDirectory: 'es',
-          style: true,
-        }),
-        addLessLoader({
-          javascriptEnabled: true,
-          modifyVars: { '@primary-color': '#1DA57A' },
-        }),
-      );
-      
-      ```
+    ```js
+    //config-overrides.js 文件
+    const { override, fixBabelImports } = require('customizecra');
+    
+    module.exports = override(
+      fixBabelImports('import', {
+        libraryName: 'antd',
+        libraryDirectory: 'es',
+        style: true,
+      }),
+      addLessLoader({
+        javascriptEnabled: true,
+        modifyVars: { '@primary-color': '#1DA57A' },
+      }),
+    );
+    
+    ```
 
 ### 9.redux
+
+#### redux
 
 * redux的概念
 
@@ -2422,8 +2857,6 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
     }
     ```
 
-
-
 #### react-redux
 
 * redux存在的问题
@@ -2467,23 +2900,23 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
       )(Counter)
       ```
 
-  * mapStateToprops()
+    * mapStateToprops()
 
-    * 将外部的数据（即state对象）转换为UI组件的标签属性
+      * 将外部的数据（即state对象）转换为UI组件的标签属性
 
-      ```
-      const mapStateToprops = function (state) {
-          return {
-          	value: state
-          }
-      }
-      ```
+        ```
+        const mapStateToprops = function (state) {
+            return {
+            	value: state
+            }
+        }
+        ```
 
-  * mapDispatchToProps()
+    * mapDispatchToProps()
 
-    * 将分发action的函数转换为UI组件的标签属性
+      * 将分发action的函数转换为UI组件的标签属性
 
-    * 简洁语法可以直接指定为actions对象或包含多个action方法的对象
+      * 简洁语法可以直接指定为actions对象或包含多个action方法的对象
 
 * 使用react-redux
 
@@ -2584,8 +3017,8 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
 
     ```js
     //src中的App.js文件
-    import React, {Component} from 'react';
     
+    import React, {Component} from 'react';
     
     //引入connect,用于包装子组件为一个容器
     import {connect} from 'react-redux';
@@ -3109,59 +3542,66 @@ React 发现这类操作繁琐冗余，因为这些都是相同的节点，但�
   }
   ```
 
-* 装饰器
 
-  * 使暴露方式更简洁
+#### 装饰器
 
-  * 下载依赖 ：yarn add babel-pligin-import  customize-cra react-app-rewired -D 
+* 使暴露方式更简洁
 
-    ​	@babel/plugin-proposal-decorators
+* 装饰器语法会帮你在调用一次，将装饰的**类**作为参数传入并将最终返回值暴露出去
 
-    ```js
-    //config-overrides.js文件
-    const { override, addDecoratorsLegacy, addWebpackAlias } = require('customize-cra');
-    
-    const { resolve } = require('path');
-    
-    module.exports = override(
-      // 添加 ES7 装饰器语法支持
-      // @babel/plugin-proposal-decorators
-      addDecoratorsLegacy(),
-      /*配置路径别名，使引用路径时更简单 
-        如：import Login from '$comp/login';
-    	import Register from '$comp/register';
-      */
-      addWebpackAlias({
-        '$comp': resolve(__dirname, 'src/components'),
-      }) 
-    );
-    ```
+* 一般使用高阶组件都会使用装饰器语法
 
-    ```js
-    //package.json文件
-    "scripts": {
-        "start": "react-app-rewired start",
-        "build": "react-app-rewired build",
-        "test": "react-app-rewired test",
-        "eject": "react-scripts eject"
-      },
-    ```
+* 下载依赖 ：yarn add babel-pligin-import  customize-cra react-app-rewired -D 
 
-    ```js
-    //login.js文件
-    /*装饰器语法会帮你在调用一次，将装饰的类作为参数传入并将最终返回值暴露出去
-     少调用一次
+  ​	@babel/plugin-proposal-decorators
+
+* 配置文件：在github中搜索customize-cra库，查看api文档进行配置
+
+  ```js
+  //config-overrides.js文件
+  const { override, addDecoratorsLegacy, addWebpackAlias } = require('customize-cra');
+  
+  const { resolve } = require('path');
+  
+  module.exports = override(
+    // 添加 ES7 装饰器语法支持
+    // @babel/plugin-proposal-decorators
+    addDecoratorsLegacy(),
+    /*配置路径别名，使引用路径时更简单 
+      如：import Login from '$comp/login';
+  	import Register from '$comp/register';
     */
-    @withForm({ title: '用户登录' })
-    // export default withForm({title: '用户登录'})(Login);
-    export default Login;
-    
-    //register.js文件
-    @withForm({ title: '用户注册' })
-    // const NewComp = withForm({ title: '用户注册' })(Register);
-    // export default NewComp;
-    export default Register;
-    ```
+    addWebpackAlias({
+      '$comp': resolve(__dirname, 'src/components'),
+    }) 
+  );
+  ```
+
+  ```js
+  //package.json文件
+  "scripts": {
+      "start": "react-app-rewired start",
+      "build": "react-app-rewired build",
+      "test": "react-app-rewired test",
+      "eject": "react-scripts eject"
+    },
+  ```
+
+  ```js
+  //login.js文件
+  /*装饰器语法会帮你在调用一次，将装饰的类作为参数传入并将最终返回值暴露出去
+   少调用一次
+  */
+  @withForm({ title: '用户登录' })
+  // export default withForm({title: '用户登录'})(Login);
+  export default Login;
+  
+  //register.js文件
+  @withForm({ title: '用户注册' })
+  // const NewComp = withForm({ title: '用户注册' })(Register);
+  // export default NewComp;
+  export default Register;
+  ```
 
 #### 组件间通信-context(一般使用redux，content为了开发库而使用)
 
@@ -3483,7 +3923,28 @@ export function createStore(reducers){
 }
 ```
 
+### 总结
 
+* 获取redux数据两种方式：
+  * connect 用于组件
+  * store.getState 用于非组件
 
+* 获取访问地址；location.pathname 
+  * 将来会给Login/Home组件使用。所以向外暴露的是CheckLogin组件，
+  * CheckLogin组件引用在Route上，所有具体路由组件特点
 
+* 跳转网址有两种方式：
+  * Redirect    用于render方法中
+  * this.props.history.push/replace    用于非render方式中
+
+* withRouter   给子组件传递路由组件的三大属性
+
+  ```js
+  import { withRouter } from 'react-router-dom'
+  
+  @withRouter 
+  class ...
+  ```
+
+  
 

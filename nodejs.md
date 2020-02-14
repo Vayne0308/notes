@@ -1,3 +1,7 @@
+---
+typora-root-url: image
+---
+
  typora-root-url: image
 
 ## 什么是Nodejs
@@ -3130,7 +3134,7 @@ app.listen(3000, err => {
   else console.log(err);
 });
 ```
-```
+```js
 //public文件的ajax.js   post请求
 <!DOCTYPE html>
 <html lang="en">
@@ -3346,7 +3350,21 @@ app.listen(3000, err => {
 
 #### web socket
 
+解决跨域：服务器代理
 
+​            \* 工作原理：
+
+​                \* 客户端发送请求到代理服务器(3000),由代理服务器转发请求到目标服务器上
+
+​                \* 目标服务器将响应给代理服务器，代理服务器将响应内容转发给客户端
+
+​                \* 客户端和代理服务器符合同源策略，没有跨域问题。 代理服务器和目标服务器又不存在跨域问题。      
+
+​            \* 使用
+
+​                \* 在 package.json 加上 proxy: "目标服务器地址"    
+
+​                \* 修改package.json, 要重启项目
 
 
 
